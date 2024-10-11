@@ -1,0 +1,25 @@
+Unnamed: 0,carnet1,carnet2,term_action,freq_interaction,program_title1,first_term1,lowinc1,highinc1,midinc1,program_title2,first_term2,lowinc2,highinc2,midinc2,month,month_action
+1292739,201713338.0,201812077.0,201810.0,4.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.enero.3.csv,1.0
+4340035,201713338.0,201812077.0,201810.0,3.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.febrero.3.csv,2.0
+4340057,201713338.0,201813911.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,1.0,0.0,edge.list.full.febrero.3.csv,2.0
+4488205,201730891.0,201816487.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.febrero.3.csv,2.0
+4489299,201730995.0,201816487.0,201810.0,2.0,23: Electric eng.,201810.0,0.0,0.0,1.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.febrero.3.csv,2.0
+4503078,201812077.0,201814661.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,0.0,1.0,23: Electric eng.,201810.0,1.0,0.0,0.0,edge.list.full.febrero.3.csv,2.0
+4523471,201813911.0,201817049.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,1.0,0.0,0.0,edge.list.full.febrero.3.csv,2.0
+7096499,201729472.0,201730995.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.marzo.3.csv,3.0
+7123411,201730995.0,201816487.0,201810.0,9.0,23: Electric eng.,201810.0,0.0,0.0,1.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.marzo.3.csv,3.0
+7153142,201813911.0,201816487.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.marzo.3.csv,3.0
+7153146,201813911.0,201817049.0,201810.0,2.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,1.0,0.0,0.0,edge.list.full.marzo.3.csv,3.0
+9337840,201713338.0,201813911.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,1.0,0.0,edge.list.full.abril.3.csv,4.0
+9452072,201730891.0,201813911.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,1.0,0.0,edge.list.full.abril.3.csv,4.0
+9452093,201730891.0,201816487.0,201810.0,6.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.abril.3.csv,4.0
+9452906,201730995.0,201816487.0,201810.0,6.0,23: Electric eng.,201810.0,0.0,0.0,1.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.abril.3.csv,4.0
+9480955,201813911.0,201816487.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.abril.3.csv,4.0
+9496379,201816487.0,201817049.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,0.0,1.0,23: Electric eng.,201810.0,1.0,0.0,0.0,edge.list.full.abril.3.csv,4.0
+10344148,201713338.0,201812077.0,201810.0,3.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.mayo.3.csv,5.0
+10344169,201713338.0,201817049.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,1.0,0.0,0.0,edge.list.full.mayo.3.csv,5.0
+10391579,201730891.0,201816487.0,201810.0,4.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.mayo.3.csv,5.0
+10391934,201730995.0,201816487.0,201810.0,2.0,23: Electric eng.,201810.0,0.0,0.0,1.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.mayo.3.csv,5.0
+10396461,201812077.0,201817049.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,0.0,1.0,23: Electric eng.,201810.0,1.0,0.0,0.0,edge.list.full.mayo.3.csv,5.0
+10403683,201813911.0,201816487.0,201810.0,1.0,23: Electric eng.,201810.0,0.0,1.0,0.0,23: Electric eng.,201810.0,0.0,0.0,1.0,edge.list.full.mayo.3.csv,5.0
+10410512,201816653.0,201817049.0,201810.0,1.0,23: Electric eng.,201810.0,1.0,0.0,0.0,23: Electric eng.,201810.0,1.0,0.0,0.0,edge.list.full.mayo.3.csv,5.0

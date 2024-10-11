@@ -1,0 +1,11 @@
+Unnamed: 0,carnet1,carnet2,term_action,freq_interaction,program_title1,first_term1,lowinc1,highinc1,midinc1,program_title2,first_term2,lowinc2,highinc2,midinc2,month,month_action
+7136638,201812283.0,201817214.0,201810.0,4.0,14: Philosophy,201810.0,0.0,0.0,1.0,14: Philosophy,201810.0,0.0,0.0,1.0,edge.list.full.marzo.3.csv,3.0
+7138673,201812420.0,201817214.0,201810.0,8.0,14: Philosophy,201810.0,1.0,0.0,0.0,14: Philosophy,201810.0,0.0,0.0,1.0,edge.list.full.marzo.3.csv,3.0
+7145830,201813061.0,201817214.0,201810.0,1.0,14: Philosophy,201810.0,0.0,1.0,0.0,14: Philosophy,201810.0,0.0,0.0,1.0,edge.list.full.marzo.3.csv,3.0
+9465330,201812283.0,201812420.0,201810.0,2.0,14: Philosophy,201810.0,0.0,0.0,1.0,14: Philosophy,201810.0,1.0,0.0,0.0,edge.list.full.abril.3.csv,4.0
+9465337,201812283.0,201813061.0,201810.0,3.0,14: Philosophy,201810.0,0.0,0.0,1.0,14: Philosophy,201810.0,0.0,1.0,0.0,edge.list.full.abril.3.csv,4.0
+9465362,201812283.0,201817214.0,201810.0,4.0,14: Philosophy,201810.0,0.0,0.0,1.0,14: Philosophy,201810.0,0.0,0.0,1.0,edge.list.full.abril.3.csv,4.0
+9467371,201812420.0,201817214.0,201810.0,4.0,14: Philosophy,201810.0,1.0,0.0,0.0,14: Philosophy,201810.0,0.0,0.0,1.0,edge.list.full.abril.3.csv,4.0
+9474104,201813061.0,201817214.0,201810.0,10.0,14: Philosophy,201810.0,0.0,1.0,0.0,14: Philosophy,201810.0,0.0,0.0,1.0,edge.list.full.abril.3.csv,4.0
+10396967,201812283.0,201817214.0,201810.0,1.0,14: Philosophy,201810.0,0.0,0.0,1.0,14: Philosophy,201810.0,0.0,0.0,1.0,edge.list.full.mayo.3.csv,5.0
+10400781,201813061.0,201817214.0,201810.0,4.0,14: Philosophy,201810.0,0.0,1.0,0.0,14: Philosophy,201810.0,0.0,0.0,1.0,edge.list.full.mayo.3.csv,5.0

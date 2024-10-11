@@ -1,0 +1,12 @@
+Unnamed: 0,carnet1,carnet2,term_action,freq_interaction,program_title1,first_term1,lowinc1,highinc1,midinc1,program_title2,first_term2,lowinc2,highinc2,midinc2,month,month_action
+13040619,201711972.0,201720061.0,201720.0,1.0,23: Electric eng.,201720.0,0.0,1.0,0.0,23: Electric eng.,201720.0,0.0,1.0,0.0,edge.list.full.agosto.3.csv,8.0
+13040668,201711972.0,201731526.0,201720.0,1.0,23: Electric eng.,201720.0,0.0,1.0,0.0,23: Electric eng.,201720.0,0.0,1.0,0.0,edge.list.full.agosto.3.csv,8.0
+13059848,201712710.0,201731391.0,201720.0,1.0,23: Electric eng.,201720.0,0.0,0.0,1.0,23: Electric eng.,201720.0,0.0,1.0,0.0,edge.list.full.agosto.3.csv,8.0
+15840999,201711972.0,201715279.0,201720.0,1.0,23: Electric eng.,201720.0,0.0,1.0,0.0,23: Electric eng.,201720.0,1.0,0.0,0.0,edge.list.full.septiembre.3.csv,9.0
+15860312,201712710.0,201716366.0,201720.0,1.0,23: Electric eng.,201720.0,0.0,0.0,1.0,23: Electric eng.,201720.0,0.0,0.0,1.0,edge.list.full.septiembre.3.csv,9.0
+15860358,201712710.0,201731391.0,201720.0,10.0,23: Electric eng.,201720.0,0.0,0.0,1.0,23: Electric eng.,201720.0,0.0,1.0,0.0,edge.list.full.septiembre.3.csv,9.0
+15914907,201715279.0,201716366.0,201720.0,3.0,23: Electric eng.,201720.0,1.0,0.0,0.0,23: Electric eng.,201720.0,0.0,0.0,1.0,edge.list.full.septiembre.3.csv,9.0
+18304688,201711972.0,201716366.0,201720.0,1.0,23: Electric eng.,201720.0,0.0,1.0,0.0,23: Electric eng.,201720.0,0.0,0.0,1.0,edge.list.full.octubre.3.csv,10.0
+18320351,201712710.0,201731391.0,201720.0,7.0,23: Electric eng.,201720.0,0.0,0.0,1.0,23: Electric eng.,201720.0,0.0,1.0,0.0,edge.list.full.octubre.3.csv,10.0
+18364694,201715279.0,201716366.0,201720.0,3.0,23: Electric eng.,201720.0,1.0,0.0,0.0,23: Electric eng.,201720.0,0.0,0.0,1.0,edge.list.full.octubre.3.csv,10.0
+20194598,201712710.0,201731391.0,201720.0,1.0,23: Electric eng.,201720.0,0.0,0.0,1.0,23: Electric eng.,201720.0,0.0,1.0,0.0,edge.list.full.noviembre.3.csv,11.0

@@ -1,0 +1,11 @@
+Unnamed: 0,carnet1,carnet2,term_action,freq_interaction,program_title1,first_term1,lowinc1,highinc1,midinc1,program_title2,first_term2,lowinc2,highinc2,midinc2,month,month_action
+1034848,201532040.0,201615221.0,201610.0,2.0,19: Art History,201610.0,0.0,1.0,0.0,19: Art History,201610.0,0.0,0.0,1.0,edge.list.full.enero.3.csv,1.0
+1138893,201615221.0,201621276.0,201610.0,3.0,19: Art History,201610.0,0.0,0.0,1.0,19: Art History,201610.0,1.0,0.0,0.0,edge.list.full.enero.3.csv,1.0
+3747476,201532040.0,201615221.0,201610.0,14.0,19: Art History,201610.0,0.0,1.0,0.0,19: Art History,201610.0,0.0,0.0,1.0,edge.list.full.febrero.3.csv,2.0
+3747486,201532040.0,201621276.0,201610.0,4.0,19: Art History,201610.0,0.0,1.0,0.0,19: Art History,201610.0,1.0,0.0,0.0,edge.list.full.febrero.3.csv,2.0
+3984196,201615221.0,201621276.0,201610.0,13.0,19: Art History,201610.0,0.0,0.0,1.0,19: Art History,201610.0,1.0,0.0,0.0,edge.list.full.febrero.3.csv,2.0
+6502979,201532040.0,201615221.0,201610.0,3.0,19: Art History,201610.0,0.0,1.0,0.0,19: Art History,201610.0,0.0,0.0,1.0,edge.list.full.marzo.3.csv,3.0
+6698611,201615221.0,201621276.0,201610.0,8.0,19: Art History,201610.0,0.0,0.0,1.0,19: Art History,201610.0,1.0,0.0,0.0,edge.list.full.marzo.3.csv,3.0
+8905797,201532040.0,201615221.0,201610.0,7.0,19: Art History,201610.0,0.0,1.0,0.0,19: Art History,201610.0,0.0,0.0,1.0,edge.list.full.abril.3.csv,4.0
+9077783,201615221.0,201621276.0,201610.0,2.0,19: Art History,201610.0,0.0,0.0,1.0,19: Art History,201610.0,1.0,0.0,0.0,edge.list.full.abril.3.csv,4.0
+10165768,201532040.0,201615221.0,201610.0,2.0,19: Art History,201610.0,0.0,1.0,0.0,19: Art History,201610.0,0.0,0.0,1.0,edge.list.full.mayo.3.csv,5.0
