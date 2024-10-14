@@ -3,6 +3,8 @@ import re
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import config
+import seaborn as sns
 
 # Dictionary for translating majors
 translations = {
@@ -49,16 +51,20 @@ def extract_first_6_numeric(x):
 
 # Helper function to extract major
 def extract_major(string):
-    parts = string.split("_")
+    # Remove the file extension first
+    base_name = string.rsplit(".", 1)[0]
+    # Split by underscores and extract the third part
+    parts = base_name.split("_")
     return parts[2] if len(parts) > 2 else None
 
 class PreferenceAnalysis:
-    def __init__(self, folder_path="Datasets_param_dist", output_dir="Results/Parameter_sets"):
+    def __init__(self, folder_path=config.PARAM_DIST_FOLDER_PATH, output_dir=config.PREF_ANALYSIS_OUTPUT_DIR):
         self.folder_path = folder_path
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
 
     def run_analysis(self):
+        sns.set(style="whitegrid")  # Set Seaborn style for a cleaner look
         files = [os.path.join(self.folder_path, f) for f in os.listdir(self.folder_path) if f.endswith('.csv')]
 
         for file in files:
@@ -74,8 +80,7 @@ class PreferenceAnalysis:
             term_i = int(term) if term else None
             major_i = extract_major(filei)
 
-            carrera = translations.get(major_i, ["Unknown", "Unknown"])
-            print(f"Processing major: {carrera[0]}")
+            print(f"Processing major: {major_i} in term {term_i}")
 
             # Add diff_W and diff_B columns
             equilibria = params.copy()
@@ -84,62 +89,52 @@ class PreferenceAnalysis:
             equilibria["diff_B"] = equilibria["pBB"] - equilibria["pBW"]
 
             # Prepare plot
-            image_name = os.path.join(self.output_dir, f"Pref_params_{term_i}_{carrera[1]}.png")
+            image_name = os.path.join(self.output_dir, f"Pref_params_{term_i}_{major_i}.png")
             gridpts = np.linspace(0, 1, 26)
 
-            # Plotting
-            plt.figure(figsize=(10, 10))
+            # Create figure with six subplots
+            fig, axes = plt.subplots(2, 3, figsize=(15, 10))
             plt.subplots_adjust(hspace=0.4, wspace=0.4)
 
-            # Scatter plot 1
-            plt.subplot(2, 3, 1)
-            plt.scatter(equilibria["pBB"], equilibria["pBW"], c='blue', marker='o')
-            plt.xlim([gridpts.min(), gridpts.max()])
-            plt.ylim([gridpts.min(), gridpts.max()])
-            plt.xlabel("f_BB")
-            plt.ylabel("f_BA")
-            plt.title("pBB vs pBW")
+            # Scatter plot 1: pBB vs pBW
+            sns.scatterplot(ax=axes[0, 0], x=equilibria["pBB"], y=equilibria["pBW"], color='black')
+            axes[0, 0].set(xlim=(gridpts.min(), gridpts.max()), ylim=(gridpts.min(), gridpts.max()))
+            axes[0, 0].set_title("pBB vs pBW")
+            axes[0, 0].set_xlabel("f_BB")
+            axes[0, 0].set_ylabel("f_BA")
 
-            # Scatter plot 2
-            plt.subplot(2, 3, 2)
-            plt.scatter(equilibria["pWW"], equilibria["pWB"], c='green', marker='o')
-            plt.xlim([gridpts.min(), gridpts.max()])
-            plt.ylim([gridpts.min(), gridpts.max()])
-            plt.xlabel("f_AA")
-            plt.ylabel("f_AB")
-            plt.title("pWW vs pWB")
+            # Scatter plot 2: pWW vs pWB
+            sns.scatterplot(ax=axes[0, 1], x=equilibria["pWW"], y=equilibria["pWB"], color='black')
+            axes[0, 1].set(xlim=(gridpts.min(), gridpts.max()), ylim=(gridpts.min(), gridpts.max()))
+            axes[0, 1].set_title("pWW vs pWB")
+            axes[0, 1].set_xlabel("f_AA")
+            axes[0, 1].set_ylabel("f_AB")
 
-            # Histogram of diff_B
-            plt.subplot(2, 3, 3)
-            plt.hist(equilibria["diff_B"], bins=30, color='blue')
-            plt.title("Histogram of diff_B")
-            plt.xlabel("f_BB - f_BA")
-            plt.ylabel("Count")
+            # Histogram of diff_B (in terms of probability)
+            sns.histplot(ax=axes[0, 2], data=equilibria, x="diff_B", bins=30, color='blue', kde=True, stat="density")
+            axes[0, 2].set_title("Histogram of diff_B")
+            axes[0, 2].set_xlabel("f_BB - f_BA")
+            axes[0, 2].set_ylabel("Probability")
 
-            # Scatter plot 3
-            plt.subplot(2, 3, 4)
-            plt.scatter(equilibria["pBW"], equilibria["pWB"], c='red', marker='o')
-            plt.xlim([gridpts.min(), gridpts.max()])
-            plt.ylim([gridpts.min(), gridpts.max()])
-            plt.xlabel("f_BA")
-            plt.ylabel("f_AB")
-            plt.title("pBW vs pWB")
+            # Scatter plot 3: pBW vs pWB
+            sns.scatterplot(ax=axes[1, 0], x=equilibria["pBW"], y=equilibria["pWB"], color='black')
+            axes[1, 0].set(xlim=(gridpts.min(), gridpts.max()), ylim=(gridpts.min(), gridpts.max()))
+            axes[1, 0].set_title("pBW vs pWB")
+            axes[1, 0].set_xlabel("f_BA")
+            axes[1, 0].set_ylabel("f_AB")
 
-            # Scatter plot 4
-            plt.subplot(2, 3, 5)
-            plt.scatter(equilibria["pBB"], equilibria["pWW"], c='purple', marker='o')
-            plt.xlim([gridpts.min(), gridpts.max()])
-            plt.ylim([gridpts.min(), gridpts.max()])
-            plt.xlabel("f_BB")
-            plt.ylabel("f_AA")
-            plt.title("pBB vs pWW")
+            # Scatter plot 4: pBB vs pWW
+            sns.scatterplot(ax=axes[1, 1], x=equilibria["pBB"], y=equilibria["pWW"], color='black')
+            axes[1, 1].set(xlim=(gridpts.min(), gridpts.max()), ylim=(gridpts.min(), gridpts.max()))
+            axes[1, 1].set_title("pBB vs pWW")
+            axes[1, 1].set_xlabel("f_BB")
+            axes[1, 1].set_ylabel("f_AA")
 
-            # Histogram of diff_W
-            plt.subplot(2, 3, 6)
-            plt.hist(equilibria["diff_W"], bins=30, color='red')
-            plt.title("Histogram of diff_W")
-            plt.xlabel("f_AA - f_AB")
-            plt.ylabel("Count")
+            # Histogram of diff_W (in terms of probability)
+            sns.histplot(ax=axes[1, 2], data=equilibria, x="diff_W", bins=30, color='red', kde=True, stat="density")
+            axes[1, 2].set_title("Histogram of diff_W")
+            axes[1, 2].set_xlabel("f_AA - f_AB")
+            axes[1, 2].set_ylabel("Probability")
 
             # Save the plot
             plt.savefig(image_name)
