@@ -5,7 +5,7 @@ import os
 import config
 
 class ParameterDistribution:
-    def __init__(self, input_csv="Datasets_type_shares/Observed_type_shares_non_zeros.csv", output_dir="Datasets_param_dist"):
+    def __init__(self, input_csv=config.TYPE_SHARES_FOLDER_PATH+"/Observed_type_shares_non_zeros.csv", output_dir=config.PARAM_DIST_FOLDER_PATH):
         self.non_zeros = pd.read_csv(input_csv)
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
