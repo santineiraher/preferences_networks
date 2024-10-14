@@ -5,7 +5,8 @@ from utils.helper_functions import share_typez  # Assuming you already have the 
 import config
 
 class NetworkConstruction:
-    def __init__(self):
+    def \
+            __init__(self):
         self.folder_path = config.NETWORK_FOLDER_PATH
         self.output_dir = config.TYPE_SHARES_FOLDER_PATH
         os.makedirs(self.output_dir, exist_ok=True)
