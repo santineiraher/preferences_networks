@@ -1,13 +1,15 @@
 # Configuration file for all constants used across scripts
 import numpy as np
 # Paths for data inputs
-DATAFRAME_CSV_PATH = "C:/Users/neira santiago/Dropbox/Torniquetes_TRT/Data/dyads.freqs_3segs.csv"
+## C:/Users/Santiago Neira/Dropbox/Torniquetes_TRT/Data/dyads.freqs_3segs.csv
+##"C:/Users/neira santiago/Dropbox/Torniquetes_TRT/Data/dyads.freqs_3segs.csv"
+DATAFRAME_CSV_PATH = "C:/Users/Santiago Neira/Dropbox/Torniquetes_TRT/Data/dyads.freqs_3segs.csv"
 OBSERVED_TYPE_SHARES_FILE = "data/Datasets_type_shares/Observed_type_shares_non_zeros.csv"
 
 # Paths for results inside the "data" folder in the project
 NETWORK_FOLDER_PATH = "../data/Datasets/Networks_semesters_majors"
 TYPE_SHARES_FOLDER_PATH="../data/Datasets/Type_shares"
-PARAM_DIST_FOLDER_PATH = "data/Datasets_param_dist"
+PARAM_DIST_FOLDER_PATH = "../data/Datasets/Param_dist"
 COUNTERFACTUALS_FOLDER_PATH = "data/Datasets/Counterfactuals"
 PREF_ANALYSIS_OUTPUT_DIR = "data/Results/Parameter_sets"
 
