@@ -11,7 +11,7 @@ NETWORK_FOLDER_PATH = "../data/Datasets/Networks_semesters_majors"
 TYPE_SHARES_FOLDER_PATH="../data/Datasets/Type_shares"
 PARAM_DIST_FOLDER_PATH = "../data/Datasets/Param_dist"
 COUNTERFACTUALS_FOLDER_PATH = "../data/Datasets/Counterfactuals"
-PREF_ANALYSIS_OUTPUT_DIR = "data/Results/Parameter_sets"
+PREF_ANALYSIS_OUTPUT_DIR = "../data/Results/Parameter_sets"
 
 # Translation of major names
 TRANSLATIONS = {
