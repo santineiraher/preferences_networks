@@ -1,7 +1,7 @@
 import pandas as pd
 import config
 import numpy as np
-
+import math
 
 def data_construction(df, term, program_title="", total=False):
     # Filter the dataframe based on term and first_term1/first_term2 columns
@@ -187,3 +187,67 @@ def eq_D1L1(s_BB, s_BW, s_WB, s_WW, p_BB, p_BW, p_WB, p_WW, ratio_BW, ratio_WB):
     equilibrium = sat_aBB & sat_aWW & sat_BW & sat_WB & sat_B0 & sat_W0 & sat_cross
 
     return equilibrium
+
+
+import pandas as pd
+import numpy as np
+import math
+
+
+def calculate_fractions(data, N_B, N_W):
+    """
+    Calculate fractions and cross values for the given data.
+
+    Parameters:
+    - data: pandas DataFrame or single row containing the counterfactual data
+    - N_B: Number of students in group B (can be a single value or column)
+    - N_W: Number of students in group W (can be a single value or column)
+
+    Returns:
+    - Modified DataFrame with 'fraction' and 'cross' columns, or a single row with these values.
+    """
+    # Check if data is a DataFrame or a single value
+    if isinstance(data, pd.DataFrame):
+        data = data.copy()  # To avoid modifying the original DataFrame directly
+
+        # Multiply the specific columns by N_B or N_W
+        data.loc[:, 'NBB'] = data.iloc[:, 0] * N_B  # Multiply sBB column by N_B
+        data.loc[:, 'NBW'] = data.iloc[:, 1] * N_B  # Multiply sBW column by N_B
+        data.loc[:, 'NWW'] = data.iloc[:, 3] * N_W  # Multiply sWW column by N_W
+
+        # Compute the fraction for each row
+        data.loc[:, 'fraction'] = data['NBB'] / (data['NBB'] + data['NBW'] + data['NWW'])
+
+        # Compute the theoretical value 'teo'
+        teo = N_B * N_W / (math.comb(N_B + N_W, 2))  # Use comb for combinations
+
+        # Compute the cross value
+        data.loc[:, 'cross'] = data['fraction'] / teo
+
+        # Return the modified dataframe
+        return data
+
+    elif isinstance(data, pd.Series) or isinstance(data, dict):
+        # If it's a single row (Series or dict)
+        sBB = data[0] if isinstance(data, pd.Series) else data['sBB']
+        sBW = data[1] if isinstance(data, pd.Series) else data['sBW']
+        sWW = data[3] if isinstance(data, pd.Series) else data['sWW']
+
+        # Calculate NBB, NBW, NWW
+        NBB = sBB * N_B
+        NBW = sBW * N_B
+        NWW = sWW * N_W
+
+        # Calculate the fraction and cross
+        fraction = NBB / (NBB + NBW + NWW)
+        teo = N_B * N_W / (math.comb(N_B + N_W, 2))
+        cross = fraction / teo
+
+        # Return a dictionary with the calculated values
+        return {
+            'fraction': fraction,
+            'cross': cross
+        }
+
+    else:
+        raise ValueError("Input data must be a DataFrame, Series, or dictionary.")

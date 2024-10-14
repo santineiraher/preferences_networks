@@ -12,6 +12,9 @@ TYPE_SHARES_FOLDER_PATH="../data/Datasets/Type_shares"
 PARAM_DIST_FOLDER_PATH = "../data/Datasets/Param_dist"
 COUNTERFACTUALS_FOLDER_PATH = "../data/Datasets/Counterfactuals"
 PREF_ANALYSIS_OUTPUT_DIR = "../data/Results/Parameter_sets"
+FACTUAL_ANALYSIS_DIR = "../data/Results/Factuals"
+
+RESULTS_DIR="../data/Results"
 
 # Translation of major names
 TRANSLATIONS = {
