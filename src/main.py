@@ -20,7 +20,7 @@ def main():
     # Step 2: Construct share types from network data
     print("Starting network construction for share-types...")
     network_constructor = NetworkConstruction()
-    network_constructor.process_files()
+    network_constructor.run_construction()
     print("Network construction and share-type generation complete.")
 
     # Step 3: Recovering parameter distribution
