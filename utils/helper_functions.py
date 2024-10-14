@@ -184,6 +184,6 @@ def eq_D1L1(s_BB, s_BW, s_WB, s_WW, p_BB, p_BW, p_WB, p_WW, ratio_BW, ratio_WB):
     sat_cross = (s_WB == ratio_BW * s_BW)
 
     # Result - is it equilibrium (TRUE/FALSE):
-    equilibrium = sat_aBB & sat_aWW & sat_BW & sat_WB & sat_B0 & sat_W0 ##& sat_cross
+    equilibrium = sat_aBB & sat_aWW & sat_BW & sat_WB & sat_B0 & sat_W0 & sat_cross
 
     return equilibrium

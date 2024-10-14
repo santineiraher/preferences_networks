@@ -28,8 +28,8 @@ def extract_between_second_underscore_and_first_dot(string):
 
 
 class Counterfactuals:
-    def __init__(self, folder_path="Datasets_param_dist", output_dir="Datasets/Counterfactuals"):
-        self.non_zeros = pd.read_csv("Datasets_type_shares/Observed_type_shares_non_zeros.csv")
+    def __init__(self, folder_path=config.PARAM_DIST_FOLDER_PATH, output_dir=config.COUNTERFACTUALS_FOLDER_PATH):
+        self.non_zeros = pd.read_csv(config.TYPE_SHARES_FOLDER_PATH+"/Observed_type_shares_non_zeros.csv")
         self.folder_path = folder_path
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
@@ -84,7 +84,7 @@ class Counterfactuals:
                 for i in sampled_indices:
                     Q_grid_aux = eq_D1L1(
                         P_grid_BB, P_grid_BW, S_grid_WB, P_grid_WW,
-                        params.iloc[i, 0], params.iloc[i, 1], params.iloc[i, 2], params.iloc[i, 3]
+                        params.iloc[i, 0], params.iloc[i, 1], params.iloc[i, 2], params.iloc[i, 3],ratio_BW,ratio_WB
                     )
 
                     if np.sum(Q_grid_aux) == 0:
