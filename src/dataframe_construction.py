@@ -58,8 +58,8 @@ class DataframeConstruction:
         return filtered_program_title1
 
     def get_translated_name(self, program_title):
-        """Retrieve the translated name from the config.TRANSLATIONS."""
-        # Search for the translation in config.TRANSLATIONS
+        """Retrieve the translated name from the config.py.TRANSLATIONS."""
+        # Search for the translation in config.py.TRANSLATIONS
         if program_title in config.TRANSLATIONS:
             return config.TRANSLATIONS[program_title][1]  # Get the file-friendly translation (second element)
         return None

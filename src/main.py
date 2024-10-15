@@ -4,7 +4,7 @@
 from src.dataframe_construction import DataframeConstruction
 from src.network_construction import NetworkConstruction
 from src.parameter_distribution import ParameterDistribution
-import config  # Import config file if we need to use any constants
+import config  # Import config.py file if we need to use any constants
 from src.counterfactuals import Counterfactuals  # Import the new class
 
 from src.pref_analysis import PreferenceAnalysis  # Import the new PreferenceAnalysis class
