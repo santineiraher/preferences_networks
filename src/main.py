@@ -6,9 +6,8 @@ from src.network_construction import NetworkConstruction
 from src.parameter_distribution import ParameterDistribution
 import config  # Import config.py file if we need to use any constants
 from src.counterfactuals import Counterfactuals  # Import the new class
-
 from src.pref_analysis import PreferenceAnalysis  # Import the new PreferenceAnalysis class
-
+from src.factuals_analysis import FactualAnalysis  # Import the new FactualsAnalysis class
 
 def main():
     # Step 1: Construct relevant dataframes
@@ -40,6 +39,14 @@ def main():
     pref_analysis = PreferenceAnalysis()
     pref_analysis.run_analysis()
     print("Preferences analysis complete.")
+
+    # Step 6: Factuals Analysis
+    print("Starting factuals analysis...")
+    fact_analysis = FactualAnalysis()
+    fact_analysis.run_analysis()
+    print("Factuals analysis complete.")
+
+    print("All processes complete.")
 
 
 if __name__ == "__main__":
