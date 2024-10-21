@@ -1,5 +1,8 @@
 # Configuration file for all constants used across scripts
 import numpy as np
+
+from generalized_dl1.config import agent_characteristics
+
 # Paths for data inputs
 ## C:/Users/Santiago Neira/Dropbox/Torniquetes_TRT/Data/dyads.freqs_3segs.csv
 ##"C:/Users/neira santiago/Dropbox/Torniquetes_TRT/Data/dyads.freqs_3segs.csv"
@@ -58,3 +61,6 @@ GRID_POINTS = list(np.linspace(0, 1, 26))
 # Other constants
 SEED = 123
 SEMESTERS=[201610,201620,201710,201720,201810,201820]
+
+
+agent_characteristics = [('A', 1), ('A', 2), ('B', 1), ('B', 2)]
