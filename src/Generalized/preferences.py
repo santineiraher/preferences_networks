@@ -47,5 +47,5 @@ if __name__ == "__main__":
     df_preference_classes = pd.DataFrame(preference_classes_list)
 
     # Save to CSV
-    output_path = '../output/preference_classes_table.csv'
+    output_path = '../../Generalized/output/preference_classes_table.csv'
     df_preference_classes.to_csv(output_path, index=False)

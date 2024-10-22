@@ -1,8 +1,6 @@
-from src_gen.assignment import AssignmentParameters
-from src_gen.preferences import PreferenceClass
-from src_gen.qp_problem2 import solve_qp
+from src.Generalized.preferences import PreferenceClass
+from src.Generalized.qp_problem2 import solve_qp
 import config
-import numpy as np
 
 
 def generate_valid_combinations(preference_classes):

@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import config  # Import the configuration file
-from utils.helper_functions import data_construction
+from utils.helper_functions_simple import data_construction
 
 
 class DataframeConstruction:

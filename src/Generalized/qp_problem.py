@@ -1,6 +1,6 @@
 from pyomo.environ import ConcreteModel, Var, Objective, Constraint, SolverFactory, NonNegativeReals, minimize, value
 import numpy as np
-from generalized_dl1.utils.generalized_utils import ensure_output_dir_exists
+from utils.generalized_utils import ensure_output_dir_exists
 import generalized_dl1.config as config
 import os
 import json

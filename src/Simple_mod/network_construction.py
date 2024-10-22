@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
-from utils.helper_functions import share_typez  # Assuming you already have the share_typez function
+from utils.helper_functions_simple import share_typez  # Assuming you already have the share_typez function
 import config
 
 class NetworkConstruction:

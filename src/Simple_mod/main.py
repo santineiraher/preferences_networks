@@ -1,13 +1,12 @@
 # main.py
 
 # Import the necessary modules
-from src.dataframe_construction import DataframeConstruction
-from src.network_construction import NetworkConstruction
-from src.parameter_distribution import ParameterDistribution
-import config  # Import config.py file if we need to use any constants
-from src.counterfactuals import Counterfactuals  # Import the new class
-from src.pref_analysis import PreferenceAnalysis  # Import the new PreferenceAnalysis class
-from src.factuals_analysis import FactualAnalysis  # Import the new FactualsAnalysis class
+from src.Simple_mod.dataframe_construction import DataframeConstruction
+from src.Simple_mod.network_construction import NetworkConstruction
+from src.Simple_mod.parameter_distribution import ParameterDistribution
+from src.Simple_mod.counterfactuals import Counterfactuals  # Import the new class
+from src.Simple_mod.pref_analysis import PreferenceAnalysis  # Import the new PreferenceAnalysis class
+from src.Simple_mod.factuals_analysis import FactualAnalysis  # Import the new FactualsAnalysis class
 
 def main():
     # Step 1: Construct relevant dataframes

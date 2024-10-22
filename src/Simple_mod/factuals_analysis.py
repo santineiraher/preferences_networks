@@ -5,7 +5,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
-from utils.helper_functions import calculate_fractions
+from utils.helper_functions_simple import calculate_fractions
 import config
 from matplotlib.patches import Patch
 

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from utils.helper_functions import eq_D1L1  # Placeholder for the eq_D1L1 function
+from utils.helper_functions_simple import eq_D1L1  # Placeholder for the eq_D1L1 function
 import os
 import config
 

@@ -1,7 +1,7 @@
 from itertools import product
 import numpy as np
 import generalized_dl1.config as config
-from generalized_dl1.utils.generalized_utils import export_q_matrix_and_vars
+from utils.generalized_utils import export_q_matrix_and_vars
 
 
 def generate_network_types(characteristics):

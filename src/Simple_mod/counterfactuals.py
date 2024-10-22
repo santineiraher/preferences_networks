@@ -2,7 +2,7 @@ import os
 import re
 import numpy as np
 import pandas as pd
-from utils.helper_functions import eq_D1L1  # Use the already refactored eq_D1L1 function
+from utils.helper_functions_simple import eq_D1L1  # Use the already refactored eq_D1L1 function
 import config  # Import configuration settings
 
 
