@@ -1,7 +1,6 @@
 # Configuration file for all constants used across scripts
 import numpy as np
 
-from generalized_dl1.config import agent_characteristics
 
 # Paths for data inputs
 ## C:/Users/Santiago Neira/Dropbox/Torniquetes_TRT/Data/dyads.freqs_3segs.csv
