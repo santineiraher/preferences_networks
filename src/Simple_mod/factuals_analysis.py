@@ -96,7 +96,7 @@ class FactualAnalysis:
 
                 # Plot the kdeplot only if valid data exists
                 sns.kdeplot(data=initial_clean, x='cross', hue='counterfactual', fill=True, common_norm=False,
-                            palette=color_palette, alpha=0.5)
+                            palette=color_palette, alpha=0.5,bw_adjust=3)
 
                 # Add a vertical line for the observed cross value
                 plt.axvline(x=cross_real, color='red', linestyle='--')

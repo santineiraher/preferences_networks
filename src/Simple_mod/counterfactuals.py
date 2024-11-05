@@ -35,6 +35,7 @@ class Counterfactuals:
         os.makedirs(self.output_dir, exist_ok=True)
 
     def run_counterfactuals(self):
+        np.random.seed(42)
         files = [os.path.join(self.folder_path, f) for f in os.listdir(self.folder_path) if f.endswith('.csv')]
         gridpts = np.linspace(0, 1, 26)
 
@@ -64,7 +65,8 @@ class Counterfactuals:
                 'sBB', 'sBW', 'sWB', 'sWW', 'pBB', 'pBW', 'pWB', 'pWW', 'counterfactual', 'N_B', 'N_W'
             ])
 
-            sampled_indices = np.random.choice(len(params), size=min(350, len(params)), replace=False)
+            sample_size = len(params) if len(params) < 350 else max(350, int(0.1 * len(params)))
+            sampled_indices = np.random.choice(len(params), size=sample_size, replace=False)
 
             for j in range(4):
                 N_Bi = int(N_B * (0.5 + 0.5 * (j + 1)))
