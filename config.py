@@ -1,7 +1,6 @@
 # Configuration file for all constants used across scripts
 import numpy as np
 
-from generalized_dl1.config import agent_characteristics
 
 # Paths for data inputs
 ## C:/Users/Santiago Neira/Dropbox/Torniquetes_TRT/Data/dyads.freqs_3segs.csv
@@ -10,12 +9,12 @@ DATAFRAME_CSV_PATH = "C:/Users/Santiago Neira/Dropbox/Torniquetes_TRT/Data/dyads
 OBSERVED_TYPE_SHARES_FILE = "data/Datasets_type_shares/Observed_type_shares_non_zeros.csv"
 
 # Paths for results inside the "data" folder in the project
-NETWORK_FOLDER_PATH = "../data/Datasets/Networks_semesters_majors"
-TYPE_SHARES_FOLDER_PATH="../data/Datasets/Type_shares"
-PARAM_DIST_FOLDER_PATH = "../data/Datasets/Param_dist"
-COUNTERFACTUALS_FOLDER_PATH = "../data/Datasets/Counterfactuals"
-PREF_ANALYSIS_OUTPUT_DIR = "../data/Results/Parameter_sets"
-FACTUAL_ANALYSIS_DIR = "../data/Results/Factuals"
+NETWORK_FOLDER_PATH = "../../data/Datasets/Networks_semesters_majors"
+TYPE_SHARES_FOLDER_PATH="../../data/Datasets/Type_shares"
+PARAM_DIST_FOLDER_PATH = "../../data/Datasets/Param_dist"
+COUNTERFACTUALS_FOLDER_PATH = "../../data/Datasets/Counterfactuals"
+PREF_ANALYSIS_OUTPUT_DIR = "../../data/Results/Parameter_sets"
+FACTUAL_ANALYSIS_DIR = "../../data/Results/Factuals"
 
 RESULTS_DIR="../data/Results"
 
