@@ -1,4 +1,4 @@
-# main.py
+# orquestrator_qp_problem.py
 
 # Import the necessary modules
 from src.Simple_mod.dataframe_construction import DataframeConstruction
