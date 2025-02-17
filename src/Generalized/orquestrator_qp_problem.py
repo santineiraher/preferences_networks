@@ -1,17 +1,3 @@
-import os
-import sys
-import pandas as pd
-import numpy as np
-from src.Generalized.assignment import AssignmentParameters
-from src.Generalized.preferences import PreferenceClass
-from src.Generalized import Big_loops
-from src.Generalized.qp_problem_new import solve_qp
-import config
-import itertools
-
-
-
-
 import numpy as np
 import itertools
 import datetime
@@ -554,9 +540,10 @@ def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-5,
 
 
 if __name__ == "__main__":
-    #egoshares = {"A1": 0.5, "A2": 0.3, "B1": 0.1, "B2": 0.1}
-    csv_path = os.path.join(config.TYPE_SHARES_FOLDER_PATH_GEN,
-                            "Observed_type_shares_non_zeros_generalized.csv")
+    # WHEN RUNNING FROM A VM
+    csv_path = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Type_shares/Observed_type_shares_non_zeros_generalized.csv"
+    #csv_path = os.path.join(config.TYPE_SHARES_FOLDER_PATH_GEN,
+    #                        "Observed_type_shares_non_zeros_generalized.csv")
     df = pd.read_csv(csv_path)
     #print(df.head(2))
     df=df[df['major']=="Economía"]
