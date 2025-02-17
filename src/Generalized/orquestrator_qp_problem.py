@@ -474,7 +474,7 @@ def format_time(seconds):
     return f"{hours}h {minutes}m {seconds}s"
 
 
-def run_parameter_search(cond_distributions, n_points=6, tolerance=1e-6,
+def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-5,
                          output_file="utility_search_results.txt", max_workers=None, solver="scipy",major:str=""):
     """Run parameter search in parallel and record results with files written relative to the script's directory."""
     # Get the directory where the script is located.
@@ -533,7 +533,7 @@ def run_parameter_search(cond_distributions, n_points=6, tolerance=1e-6,
                         f.write(f"{k}: {v:.4f}\n")
                     f.write("\n")
 
-            if completed_tasks % max(1, total_count // 100) == 0 or completed_tasks == total_count:
+            if completed_tasks % max(1, total_count // 1000) == 0 or completed_tasks == total_count:
                 elapsed_time = time.time() - start_time
                 progress = completed_tasks / total_count
                 estimated_remaining = (elapsed_time / progress) - elapsed_time
@@ -563,7 +563,7 @@ if __name__ == "__main__":
     #print(df.head(2))
     df=df[df['term']==201610]
     #print(df)
-
+    #print(type(df.iloc[0,0]))
     cond_distributions = {
         (('A', 1), 0): df.iloc[0,0],
         (('A', 1), ('A', 1)): df.iloc[0,1],
@@ -586,4 +586,4 @@ if __name__ == "__main__":
         (('B', 2), ('B', 1)): df.iloc[0,18],
         (('B',2), ('B', 2)): df.iloc[0,19],
     }
-    run_parameter_search(cond_distributions, n_points=2, max_workers=None, solver="scipy",major="Economics_201610")
+    run_parameter_search(cond_distributions, n_points=6, max_workers=None, solver="scipy",major="Economics_201610")
