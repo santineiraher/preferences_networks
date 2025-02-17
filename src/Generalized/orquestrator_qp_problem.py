@@ -542,9 +542,9 @@ def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-4,
 
 if __name__ == "__main__":
     # WHEN RUNNING FROM A VM
-    #csv_path = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Type_shares/Observed_type_shares_non_zeros_generalized.csv"
-    csv_path = os.path.join(config.TYPE_SHARES_FOLDER_PATH_GEN,
-                            "Observed_type_shares_non_zeros_generalized.csv")
+    csv_path = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Type_shares/Observed_type_shares_non_zeros_generalized.csv"
+    #csv_path = os.path.join(config.TYPE_SHARES_FOLDER_PATH_GEN,
+    #                        "Observed_type_shares_non_zeros_generalized.csv")
     df = pd.read_csv(csv_path)
     #print(df.head(2))
     df=df[df['major']=="Economía"]
