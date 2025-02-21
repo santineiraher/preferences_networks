@@ -462,14 +462,14 @@ def format_time(seconds):
 
 
 def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-4,
-                         output_file="utility_search_results.txt", max_workers=None, solver="scipy",major:str=""):
-    """Run parameter search in parallel and record results with files written relative to the script's directory."""
-    # Get the directory where the script is located.
+                         max_workers=None, solver="scipy", major=""):
+    """Run parameter search in parallel and record results in a DataFrame."""
+    # Get the directory where the script is located
     script_dir = os.path.dirname(os.path.realpath(__file__))
     output_dir = config.GENERAL_PARAMETER_PATH
     os.makedirs(output_dir, exist_ok=True)
 
-    # Define agent characteristics and generate parameter templates.
+    # Define agent characteristics and generate parameter templates
     agent_characteristics = config.agent_characteristics
     templates = generate_parameter_grid(n_points)
     total_count = len(templates)
@@ -484,10 +484,9 @@ def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-4,
     print(f"Testing {total_count} parameter combinations using {effective_workers} workers")
     print("=" * 50)
 
-    # Create an output directory relative to the script's directory.
-    os.makedirs(output_dir, exist_ok=True)
+    # Create list to store results
+    results_data = []
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_path = os.path.join(output_dir, f"{timestamp}_{output_file}_{major}")
     warnings_path = os.path.join(output_dir, f"{timestamp}_warnings.log")
 
     consistent_count = 0
@@ -498,7 +497,7 @@ def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-4,
     completed_tasks = 0
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor, \
-            open(output_path, "w") as f, open(warnings_path, "w") as warn_f:
+            open(warnings_path, "w") as warn_f:
 
         futures = {executor.submit(process_template, arg): arg[0] for arg in task_args}
         for future in concurrent.futures.as_completed(futures):
@@ -506,8 +505,7 @@ def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-4,
             index, template, result, combined_warnings, error_message = future.result()
 
             if error_message is not None:
-                f.write(f"Error processing combination {index}: {error_message}\n\n")
-                warn_f.write(f"Error in parameter set {index}: {error_message}\n")
+                warn_f.write(f"Error processing combination {index}: {error_message}\n\n")
             else:
                 if combined_warnings and len(combined_warnings) > 0:
                     warn_f.write(f"\nWarnings for parameter set {index}:\n")
@@ -515,10 +513,29 @@ def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-4,
                         warn_f.write(f"{warning_msg}\n")
                 if result is not None and result < tolerance:
                     consistent_count += 1
-                    f.write(f"Found consistent parameters (result = {result:.8f}) for combination {index}:\n")
+                    # Create a dictionary for this result
+                    result_dict = {
+                        'combination_id': index,
+                        'result': result,
+                        'major': major,
+                        'timestamp': timestamp
+                    }
+                    # Add all template parameters with cleaned up column names
                     for k, v in template.items():
-                        f.write(f"{k}: {v:.4f}\n")
-                    f.write("\n")
+                        # Extract components from the tuple key
+                        first_type, first_char = k[0]  # e.g., ('A', 'X')
+                        second_comp = k[1]  # either 0 or another tuple like ('B', 'X')
+
+                        if second_comp == 0:
+                            # Handle alone case
+                            param_name = f"utility_{first_type}_alone"
+                        else:
+                            # Handle interaction case
+                            second_type, second_char = second_comp
+                            param_name = f"utility_{first_type}_{second_type}_interaction"
+
+                        result_dict[param_name] = v
+                    results_data.append(result_dict)
 
             if completed_tasks % max(1, total_count // 100) == 0 or completed_tasks == total_count:
                 elapsed_time = time.time() - start_time
@@ -532,19 +549,34 @@ def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-4,
                 print(f"Consistent parameters found so far: {consistent_count}")
                 print("-" * 50)
 
+    # Create DataFrame from results
+    results_df = pd.DataFrame(results_data)
+
+    # Save DataFrame to CSV
+    output_path = os.path.join(output_dir, f"{timestamp}_parameter_search_results_{major}.csv")
+    results_df.to_csv(output_path, index=False)
+
     print("\nParameter search completed.")
     print(f"Total consistent parameter sets found: {consistent_count}")
     print(f"Results saved to: {output_path}")
     print(f"Warnings saved to: {warnings_path}")
+
+    return results_df
+
+
+
+
+
+
 
 
 
 
 if __name__ == "__main__":
     # WHEN RUNNING FROM A VM
-    csv_path = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Type_shares/Observed_type_shares_non_zeros_generalized.csv"
-    #csv_path = os.path.join(config.TYPE_SHARES_FOLDER_PATH_GEN,
-    #                        "Observed_type_shares_non_zeros_generalized.csv")
+    #csv_path = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Type_shares/Observed_type_shares_non_zeros_generalized.csv"
+    csv_path = os.path.join(config.TYPE_SHARES_FOLDER_PATH_GEN,
+                            "Observed_type_shares_non_zeros_generalized.csv")
     df = pd.read_csv(csv_path)
     #print(df.head(2))
     df=df[df['major']=="Economía"]
@@ -574,4 +606,4 @@ if __name__ == "__main__":
         (('B', 2), ('B', 1)): df.iloc[0,18],
         (('B',2), ('B', 2)): df.iloc[0,19],
     }
-    run_parameter_search(cond_distributions, n_points=6, max_workers=None, solver="scipy",major="Economics_201610")
+    run_parameter_search(cond_distributions, n_points=2, max_workers=None, solver="scipy",major="Economics_201610")
