@@ -606,4 +606,4 @@ if __name__ == "__main__":
         (('B', 2), ('B', 1)): df.iloc[0,18],
         (('B',2), ('B', 2)): df.iloc[0,19],
     }
-    run_parameter_search(cond_distributions, n_points=4, max_workers=None, solver="scipy",major="Economics_201610")
+    run_parameter_search(cond_distributions, n_points=5, max_workers=None, solver="scipy",major="Economics_201610")
