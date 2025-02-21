@@ -539,7 +539,7 @@ def run_parameter_search(cond_distributions, n_points=3, tolerance=1,
                         result_dict[param_name] = v
                     results_data.append(result_dict)
 
-            if completed_tasks % max(1, total_count // 100) == 0 or completed_tasks == total_count:
+            if completed_tasks % max(1, total_count // 100000) == 0 or completed_tasks == total_count:
                 elapsed_time = time.time() - start_time
                 progress = completed_tasks / total_count
                 estimated_remaining = (elapsed_time / progress) - elapsed_time
@@ -608,4 +608,4 @@ if __name__ == "__main__":
         (('B', 2), ('B', 1)): df.iloc[0,18],
         (('B',2), ('B', 2)): df.iloc[0,19],
     }
-    run_parameter_search(cond_distributions, n_points=5, max_workers=None, solver="scipy",major="Economics_201610")
+    run_parameter_search(cond_distributions, n_points=4, max_workers=None, solver="scipy",major="Economics_201610")
