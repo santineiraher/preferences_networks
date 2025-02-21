@@ -466,7 +466,9 @@ def run_parameter_search(cond_distributions, n_points=3, tolerance=1,
     """Run parameter search in parallel and record results in a DataFrame."""
     # Get the directory where the script is located
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    output_dir = config.GENERAL_PARAMETER_PATH
+
+    output_dir = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Generalized_parameters"
+    #output_dir = config.GENERAL_PARAMETER_PATH
     os.makedirs(output_dir, exist_ok=True)
 
     # Define agent characteristics and generate parameter templates
