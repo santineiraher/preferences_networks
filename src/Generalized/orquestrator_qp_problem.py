@@ -461,7 +461,7 @@ def format_time(seconds):
     return f"{hours}h {minutes}m {seconds}s"
 
 
-def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-4,
+def run_parameter_search(cond_distributions, n_points=3, tolerance=1,
                          max_workers=None, solver="scipy", major=""):
     """Run parameter search in parallel and record results in a DataFrame."""
     # Get the directory where the script is located
@@ -574,9 +574,9 @@ def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-4,
 
 if __name__ == "__main__":
     # WHEN RUNNING FROM A VM
-    #csv_path = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Type_shares/Observed_type_shares_non_zeros_generalized.csv"
-    csv_path = os.path.join(config.TYPE_SHARES_FOLDER_PATH_GEN,
-                            "Observed_type_shares_non_zeros_generalized.csv")
+    csv_path = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Type_shares/Observed_type_shares_non_zeros_generalized.csv"
+    #csv_path = os.path.join(config.TYPE_SHARES_FOLDER_PATH_GEN,
+    #                        "Observed_type_shares_non_zeros_generalized.csv")
     df = pd.read_csv(csv_path)
     #print(df.head(2))
     df=df[df['major']=="Economía"]
@@ -606,4 +606,4 @@ if __name__ == "__main__":
         (('B', 2), ('B', 1)): df.iloc[0,18],
         (('B',2), ('B', 2)): df.iloc[0,19],
     }
-    run_parameter_search(cond_distributions, n_points=2, max_workers=None, solver="scipy",major="Economics_201610")
+    run_parameter_search(cond_distributions, n_points=4, max_workers=None, solver="scipy",major="Economics_201610")
