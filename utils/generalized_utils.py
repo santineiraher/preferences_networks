@@ -40,9 +40,8 @@ def share_typez_gen(df, min_num, major, term, folder_class_path):
             f"Warning: The room assignment file '{room_assignment_file}' does not exist. Proceeding without it.")
         return pd.DataFrame()  # early returning
 
-    room_df['Room']=room_df['Room'].astype(pd.Int64Dtype())
-    room_df['Room']+=1
-
+    room_df['Room'] = room_df['Room'].astype(pd.Int64Dtype())
+    room_df['Room'] += 1
 
     # Ensure relevant columns exist
     if 'Identifier' not in room_df.columns or 'Room' not in room_df.columns:
@@ -92,9 +91,6 @@ def share_typez_gen(df, min_num, major, term, folder_class_path):
             ~network_data_check['carnet2'].isin([current_carnet1, current_carnet2])
             ]
 
-    # Debugging: Print columns of best_friends_df before filtering
-
-
     # Check if 'freq_interaction' exists before filtering
     if 'freq_interaction' not in best_friends_df.columns:
         print("Error: 'freq_interaction' column is missing.")
@@ -119,23 +115,21 @@ def share_typez_gen(df, min_num, major, term, folder_class_path):
     best_friends2 = best_friends.rename(
         columns={'carnet1': 'carnet2', 'carnet2': 'carnet1', 'income_1': 'income_2', 'income_2': 'income_1'})
 
-
-
     best_friends_f = pd.concat([best_friends, best_friends2, lone])
 
     best_friends_f['carnet1'] = best_friends_f['carnet1'].astype(pd.Int64Dtype())
     best_friends_f['carnet2'] = best_friends_f['carnet2'].astype(pd.Int64Dtype())
-    best_friends_f['income_1']=best_friends_f['income_1'].astype(pd.Int64Dtype())
-    best_friends_f['income_2']=best_friends_f['income_2'].astype(pd.Int64Dtype())
+    best_friends_f['income_1'] = best_friends_f['income_1'].astype(pd.Int64Dtype())
+    best_friends_f['income_2'] = best_friends_f['income_2'].astype(pd.Int64Dtype())
 
-
-
-    best_friends_f = best_friends_f.merge(room_df[['Identifier', 'Room']], left_on='carnet1', right_on='Identifier', how='left').rename(
+    best_friends_f = best_friends_f.merge(room_df[['Identifier', 'Room']], left_on='carnet1', right_on='Identifier',
+                                          how='left').rename(
         columns={'Room': 'room1'})
-    best_friends_f = best_friends_f.merge(room_df[['Identifier', 'Room']], left_on='carnet2', right_on='Identifier', how='left').rename(
+    best_friends_f = best_friends_f.merge(room_df[['Identifier', 'Room']], left_on='carnet2', right_on='Identifier',
+                                          how='left').rename(
         columns={'Room': 'room2'})
 
-    best_friends_f=best_friends_f.drop(columns=['Identifier_x','Identifier_y'])
+    best_friends_f = best_friends_f.drop(columns=['Identifier_x', 'Identifier_y'])
     best_friends_f['room1'] = best_friends_f['room1'].astype(pd.Int64Dtype())
     best_friends_f['room2'] = best_friends_f['room2'].astype(pd.Int64Dtype())
 
@@ -168,7 +162,6 @@ def share_typez_gen(df, min_num, major, term, folder_class_path):
     if total_pairs > 0:
         cond_distributions = {k: v / total_pairs for k, v in cond_distributions.items()}
 
-
     # Calculate the sum for each group (based on the first part of the key)
     group_sums = defaultdict(float)
     for (first_key, second_key), value in cond_distributions.items():
@@ -180,31 +173,47 @@ def share_typez_gen(df, min_num, major, term, folder_class_path):
         for (first_key, second_key), value in cond_distributions.items()
     }
 
-    # Corrected N_values calculation for all combinations of income_label and room
-
-
-    total_individuals = sum(total_counts.values())
-    # Calculate the overall sum to normalize the values into proportions
-    overall_total = total_individuals if total_individuals > 0 else 1  # Avoid division by zero
-    N_values = {
-        f"N_{income_label}_{room}": (total_counts[(income_label, room)] / overall_total)
-        for income_label in ['A', 'B']
-        for room in [1, 2]  # Room levels now include 1 and 2 as specified
-    }
-
-
-
     # Calculate total unique individuals
     unique_carnet1 = best_friends_f['carnet1'].dropna().unique()
     unique_carnet2 = best_friends_f['carnet2'].dropna().unique()
     total_individuals = len(set(unique_carnet1).union(set(unique_carnet2)))
 
+    # Count unique individuals by type (income and room)
+    individual_counts = defaultdict(int)
+
+    # Get unique individuals by type
+    for _, row in best_friends_f.drop_duplicates(subset=['carnet1']).iterrows():
+        income = row['income_1']
+        room = row['room1']
+        if not pd.isna(income) and not pd.isna(room):
+            income_label = 'B' if income == 1 else 'A'
+            individual_counts[(income_label, room)] += 1
+
+    # Calculate the overall sum to normalize the values into proportions
+    overall_total = total_individuals if total_individuals > 0 else 1  # Avoid division by zero
+
+    # Store the proportions
+    N_values = {
+        f"N_{income_label}_{room}": (individual_counts[(income_label, room)] / overall_total)
+        for income_label in ['A', 'B']
+        for room in [1, 2]
+    }
+
+    # Store the raw counts
+    N_values_raw = {
+        f"N_{income_label}_{room}_raw": individual_counts[(income_label, room)]
+        for income_label in ['A', 'B']
+        for room in [1, 2]
+    }
+
     # Prepare the result DataFrame dynamically based on cond_distributions keys
     cond_distribution_columns = {f"mu_{key}": [value] for key, value in cond_distributions.items()}
+
     # Combine all data into the final DataFrame
     result_df = pd.DataFrame({
         **cond_distribution_columns,  # Conditional distributions as columns
-        **N_values,  # Counts of income and room combinations
+        **N_values,  # Proportions of income and room combinations
+        **N_values_raw,  # Raw counts of income and room combinations - NEW
         'total_individuals': [total_individuals],  # Total unique individuals
         'term': [term],
         'major': [major]

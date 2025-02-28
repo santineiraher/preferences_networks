@@ -19,6 +19,9 @@ COUNTERFACTUALS_FOLDER_PATH = "../data/Datasets/Counterfactuals"
 PREF_ANALYSIS_OUTPUT_DIR = "../data/Results/Parameter_sets"
 
 GENERAL_PARAMETER_PATH = "../../data/Datasets/Generalized_parameters"
+GENERAL_COUNTERFACTUAL_PATH = "../../data/Datasets/Counterfactuals/Generalized"
+
+
 
 FACTUAL_ANALYSIS_DIR = "../data/Results/Factuals"
 

@@ -1,20 +1,20 @@
 import os
 import pandas as pd
 import numpy as np
-from utils.generalized_utils import share_typez_gen  # Assuming you already have the share_typez function
+from utils.generalized_utils import share_typez_gen
 import config
 
+
 class NetworkConstructionGeneralized:
-    def \
-            __init__(self):
+    def __init__(self):
         self.folder_path = config.NETWORK_FOLDER_PATH_GEN
         self.folder_class_path = config.ASSIGNMENT_PATH
         self.output_dir = config.TYPE_SHARES_FOLDER_PATH_GEN
         os.makedirs(self.output_dir, exist_ok=True)
 
         # Set income labels and room levels
-        income_labels = ['A', 'B']  # 'A' for high income, 'B' for low income
-        room_levels = [1, 2]  # Room levels
+        income_labels = ['A', 'B']
+        room_levels = [1, 2]
 
         # Generate column names for mu_ based on income and room combinations
         mu_columns = []
@@ -30,9 +30,12 @@ class NetworkConstructionGeneralized:
         # Generate column names for N_ based on income and room combinations
         N_columns = [f"N_{income_label}_{room}" for income_label in income_labels for room in room_levels]
 
-        # Combine all columns into initial_df
-        self.initial_df = pd.DataFrame(columns=mu_columns + N_columns + ['total_individuals',"term", "major"])
+        # Generate column names for raw N_ values
+        N_raw_columns = [f"N_{income_label}_{room}_raw" for income_label in income_labels for room in room_levels]
 
+        # Combine all columns into initial_df
+        self.initial_df = pd.DataFrame(
+            columns=mu_columns + N_columns + N_raw_columns + ['total_individuals', "term", "major"])
 
     def extract_first_6_numeric(self, filename):
         """Extract the first 6-digit number from the filename as a string."""
@@ -43,7 +46,7 @@ class NetworkConstructionGeneralized:
         """Extract major name as a string between the fourth underscore and '.csv' in filename."""
         parts = filename.split('_')
         if len(parts) > 4:
-            return str(parts[4].split('.')[0])  # Return as string
+            return str(parts[4].split('.')[0])
         return None
 
     def run_construction(self):
@@ -53,8 +56,8 @@ class NetworkConstructionGeneralized:
         for file in files:
             print(f"Processing file: {file}")
             df = pd.read_csv(file)
-            term = self.extract_first_6_numeric(file)  # Extract term as string first
-            major = self.extract_major(file)  # Extract major as string
+            term = self.extract_first_6_numeric(file)
+            major = self.extract_major(file)
 
             # Ensure term is treated as a numeric type if possible
             try:
@@ -69,13 +72,14 @@ class NetworkConstructionGeneralized:
                 continue
 
             print(f"Term: {term}, Major: {major}")
-            if (term==201620 or term == 201820) and major=='Historia':
+            if (term == 201620 or term == 201820) and major == 'Historia':
                 print("Skipping due to errors")
                 continue
+
             # Call the share_typez function
             aux = share_typez_gen(df, 1, major, term, self.folder_class_path)
 
-            # Convert the returned dict to DataFrame without wrapping it in another list
+            # Convert the returned dict to DataFrame
             aux_df = pd.DataFrame(aux, columns=self.initial_df.columns)
 
             # Append to the initial DataFrame
@@ -99,6 +103,7 @@ class NetworkConstructionGeneralized:
         # Save the Excel file
         with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
             self.initial_df.to_excel(writer, index=False)
+
 
 if __name__ == "__main__":
     network_constructor = NetworkConstructionGeneralized()
