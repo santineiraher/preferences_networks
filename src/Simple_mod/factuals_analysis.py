@@ -5,7 +5,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
-from utils.helper_functions_simple import calculate_fractions
+from utils.helper_functions_simple import calculate_fractions, calculate_links,calculate_links_dataframe
 import config
 from matplotlib.patches import Patch
 
@@ -34,6 +34,8 @@ class FactualAnalysis:
     def run_analysis(self):
         files = [os.path.join(self.folder_path, f) for f in os.listdir(self.folder_path) if f.endswith('.csv')]
 
+
+
         color_palette = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3"]
         N_B_list = ["No counterfactual", "+50%", "+100%", "+150%"]
 
@@ -45,11 +47,13 @@ class FactualAnalysis:
             print(f"Processing term {term} and major {major}")
 
             zeroes = self.non_zeros[(self.non_zeros['term'] == term) & (self.non_zeros['major'] == major)]
+
+
             if zeroes.empty:
                 print(f"No matching rows for term {term} and major {major}")
                 continue
 
-            cross_actual = calculate_fractions(zeroes, zeroes['N_B'].iloc[0], zeroes['N_W'].iloc[0])
+            cross_actual = calculate_links_dataframe(zeroes, zeroes['N_B'].iloc[0], zeroes['N_W'].iloc[0])
 
             if not cross_actual.empty and 'cross' in cross_actual.columns:
                 cross_real = cross_actual['cross'].iloc[0]

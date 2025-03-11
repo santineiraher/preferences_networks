@@ -13,17 +13,17 @@ OBSERVED_TYPE_SHARES_FILE = "data/Datasets_type_shares/Observed_type_shares_non_
 
 # Paths for results inside the "data" folder in the project
 NETWORK_FOLDER_PATH = "../data/Datasets/Networks_semesters_majors"
-TYPE_SHARES_FOLDER_PATH="../data/Datasets/Type_shares"
+TYPE_SHARES_FOLDER_PATH="../../data/Datasets/Type_shares"
 PARAM_DIST_FOLDER_PATH = "../data/Datasets/Param_dist"
-COUNTERFACTUALS_FOLDER_PATH = "../data/Datasets/Counterfactuals"
+COUNTERFACTUALS_FOLDER_PATH = "../../data/Datasets/Counterfactuals"
 PREF_ANALYSIS_OUTPUT_DIR = "../data/Results/Parameter_sets"
 
 GENERAL_PARAMETER_PATH = "../../data/Datasets/Generalized_parameters"
 GENERAL_COUNTERFACTUAL_PATH = "../../data/Datasets/Counterfactuals/Generalized"
+MEDICINE_COUNTERFACTUAL_PATH = "../../data/Datasets/Counterfactuals/Generalized_Medicine"
 
-
-
-FACTUAL_ANALYSIS_DIR = "../data/Results/Factuals"
+RESULTS_DIR_GEN ="../../data/Results/Generalized"
+FACTUAL_ANALYSIS_DIR = "../../data/Results/Factuals"
 
 
 NETWORK_FOLDER_PATH_GEN="../../data/Datasets/Networks_semesters_majors"
