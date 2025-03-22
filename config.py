@@ -20,7 +20,11 @@ PREF_ANALYSIS_OUTPUT_DIR = "../data/Results/Parameter_sets"
 
 GENERAL_PARAMETER_PATH = "../../data/Datasets/Generalized_parameters"
 GENERAL_COUNTERFACTUAL_PATH = "../../data/Datasets/Counterfactuals/Generalized"
+GENERAL_COUNTERFACTUAL_PATH_2 = "../../data/Datasets/Counterfactuals/Generalized_2"
+GENERAL_COUNTERFACTUAL_PATH_3 = "../../data/Datasets/Counterfactuals/Generalized_3"
 MEDICINE_COUNTERFACTUAL_PATH = "../../data/Datasets/Counterfactuals/Generalized_Medicine"
+MEDICINE_COUNTERFACTUAL_PATH_2 = "../../data/Datasets/Counterfactuals/Generalized_Medicine_2"
+MEDICINE_COUNTERFACTUAL_PATH_3 = "../../data/Datasets/Counterfactuals/Generalized_Medicine_3"
 
 RESULTS_DIR_GEN ="../../data/Results/Generalized"
 FACTUAL_ANALYSIS_DIR = "../../data/Results/Factuals"

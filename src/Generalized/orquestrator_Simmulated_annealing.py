@@ -12,9 +12,10 @@ from contextlib import redirect_stdout, redirect_stderr
 
 # Import the required functions from the QP module
 from src.Generalized.qp_problem_new import (solve_qp, simulate_stable_preferences, create_q_matrix,
-                           create_box_constraints, create_preference_class_constraints,
-                           map_types_to_preference_classes, create_index_grid,
-                           create_type_share_constraints)
+                                            create_box_constraints, create_preference_class_constraints,
+                                            map_types_to_preference_classes, create_index_grid,
+                                            create_type_share_constraints)
+
 
 def create_param_functions(utility_matrix):
     """
@@ -34,18 +35,6 @@ def generate_valid_combinations(preference_classes):
         for network_type in types:
             valid_combinations.append((types, network_type))
     return valid_combinations
-
-
-def create_param_functions(utility_matrix):
-    """
-    Create parameter functions based on an input utility matrix.
-    The utility matrix maps pairs of agent characteristics to utility values.
-    """
-
-    def param_function(x_i, x_l):
-        return utility_matrix.get((x_i, x_l), 0)  # Default to 0 if not found
-
-    return param_function
 
 
 def create_agent_types(agent_characteristics):
@@ -80,170 +69,6 @@ def get_preference_classes(agent_characteristics):
             preference_classes.append([(x_i, 0)] + [(x_i, x_j) for x_j in S])
 
     return preference_classes
-
-
-def create_template_from_uniform(uniform_array):
-    """
-    Convert uniform array values into template matrix format.
-    """
-    template_matrix = {}
-    types = ['A', 'B']
-
-    # Helper to get value from uniform array
-    def get_uniform_value(i, j):
-        return float(uniform_array[i % uniform_array.shape[0], j % uniform_array.shape[1]])
-
-    # Create alone cases
-    for i, t in enumerate(types):
-        template_matrix[((t, 'X'), 0)] = get_uniform_value(i, 0)
-
-    # Create interaction cases
-    for i, t1 in enumerate(types):
-        for j, t2 in enumerate(types):
-            if t1 == t2:
-                template_matrix[((t1, 'X'), (t2, 'X'))] = get_uniform_value(i, j)
-            else:
-                template_matrix[((t1, 'X'), (t2, 'Y'))] = get_uniform_value(i, j)
-                template_matrix[((t2, 'X'), (t1, 'Y'))] = get_uniform_value(j, i)
-
-    return template_matrix
-
-
-def process_row_to_cond_distributions(row):
-    """
-    Convert a row from the CSV into conditional distributions format.
-    """
-    cond_dist = {}
-    types = ['A', 'B']
-    rooms = [1, 2]
-
-    # Process mu values from the row
-    for t1, r1 in itertools.product(types, rooms):
-        # Alone case
-        key = f"mu_(('{t1}', {r1}), 0)"
-        cond_dist[((t1, r1), 0)] = float(row[key])
-
-        # Interaction cases
-        for t2, r2 in itertools.product(types, rooms):
-            key = f"mu_(('{t1}', {r1}), ('{t2}', {r2}))"
-            cond_dist[((t1, r1), (t2, r2))] = float(row[key])
-
-    return cond_dist
-
-
-def run_qp_pipeline(cond_distributions, utility_matrix):
-    """
-    Run QP pipeline with given conditional distributions and utility matrix
-    """
-    all_types = create_agent_types(config.agent_characteristics)
-    preference_classes = get_preference_classes(config.agent_characteristics)
-    valid_combinations = generate_valid_combinations(preference_classes)
-
-    try:
-        alpha_solution, result = solve_qp(all_types, utility_matrix, valid_combinations,
-                                          preference_classes, cond_distributions,
-                                          tolerance=1e-6, pack="scipy")
-        return alpha_solution, result
-    except Exception as e:
-        print(f"QP solver failed: {str(e)}")
-        return None, None
-
-
-def run_analysis_pipeline():
-    """
-    Main function to run the analysis over all CSV rows
-    """
-    # Setup paths
-    output_dir = config.GENERAL_PARAMETER_PATH
-    os.makedirs(output_dir, exist_ok=True)
-
-    # Read the CSV file
-    csv_path = os.path.join(config.TYPE_SHARES_FOLDER_PATH_GEN,
-                            "Observed_type_shares_non_zeros_generalized.csv")
-    df = pd.read_csv(csv_path)
-
-    # Create uniform utility array (10-dimensional)
-    uniform_array = Big_loops.create_uniform_utility_array(size_dim=6)
-
-
-
-    # Process each row
-    for idx, row in df.iterrows():
-        term = row['term']
-        major = row['major']
-        print(f"Processing term: {term}, major: {major}")
-
-        # Get conditional distributions from row
-        cond_distributions = process_row_to_cond_distributions(row)
-
-        # Iterate through the 10-dimensional array
-        found_solution = False
-        for indices in itertools.product(range(6), repeat=10):
-            # Extract values for this combination
-            values = uniform_array[indices]
-
-            # Create template matrix from these values
-            template_matrix = create_template_from_values(values)
-
-            # Expand the template matrix
-            utility_matrix = Big_loops.expand_utility_matrix(template_matrix)
-
-            # Try to solve QP problem
-            alpha_solution, result = run_qp_pipeline(cond_distributions, utility_matrix)
-
-            # If solved successfully
-            if result is not None and result < 1e-4:
-                output_file = os.path.join(output_dir, f"pref_{term}_{major}.csv")
-
-                # Save results
-                results_dict = {
-                    'term': term,
-                    'major': major,
-                    'result': result,
-                    'utility_values': values.tolist(),
-                    ##
-                }
-
-                pd.DataFrame([results_dict]).to_csv(output_file, index=False)
-                print(f"Found solution for term {term}, major {major}")
-                found_solution = True
-                break
-
-        if not found_solution:
-            print(f"No solution found for term {term}, major {major}")
-
-
-def create_agent_types(agent_characteristics):
-    """Create all possible agent types from characteristics."""
-    agent_types = []
-    for x in agent_characteristics:
-        agent_types.append((x, 0))
-    for x in agent_characteristics:
-        for y in agent_characteristics:
-            agent_types.append((x, y))
-    return agent_types
-
-
-def get_preference_classes(agent_characteristics):
-    """Generate all possible preference classes."""
-    preference_classes = []
-    for x_i in agent_characteristics:
-        subsets = itertools.chain.from_iterable(
-            itertools.combinations(agent_characteristics, r)
-            for r in range(0, len(agent_characteristics) + 1)
-        )
-        for S in subsets:
-            preference_classes.append([(x_i, 0)] + [(x_i, x_j) for x_j in S])
-    return preference_classes
-
-
-def generate_valid_combinations(preference_classes):
-    """Generate valid combinations of preference classes and types."""
-    valid_combinations = []
-    for (i, types) in enumerate(preference_classes):
-        for network_type in types:
-            valid_combinations.append((types, network_type))
-    return valid_combinations
 
 
 def expand_utility_matrix(template):
@@ -327,130 +152,29 @@ def expand_utility_matrix(template):
     return expanded_matrix
 
 
-def generate_parameter_grid(n_points=5):
-    """Generate grid of utility parameters with 10 independent dimensions."""
-    param_ranges = {
-        'alone_A': np.linspace(0, 1.0, n_points),  # for (('A','X'), 0)
-        'alone_B': np.linspace(0, 1.0, n_points),  # for (('B','X'), 0)
-        'same_A': np.linspace(0, 1.0, n_points),  # for (('A','X'), ('A','X'))
-        'same_B': np.linspace(0, 1.0, n_points),  # for (('B','X'), ('B','X'))
-        'diff_A': np.linspace(0, 1.0, n_points),  # for (('A','X'), ('A','Y'))
-        'diff_B': np.linspace(0, 1.0, n_points),  # for (('B','X'), ('B','Y'))
-        'cross_AXBX': np.linspace(0, 1.0, n_points),  # for (('A','X'), ('B','X'))
-        'cross_BXAX': np.linspace(0, 1.0, n_points),  # for (('B','X'), ('A','X'))
-        'cross_AXBY': np.linspace(0, 1.0, n_points),  # for (('A','X'), ('B','Y'))
-        'cross_BXAY': np.linspace(0, 1.0, n_points)  # for (('B','X'), ('A','Y'))
-    }
-
-    sorted_keys = sorted(param_ranges.keys())
-    combinations = itertools.product(*(param_ranges[key] for key in sorted_keys))
-
-    template_matrices = []
-    for combo in combinations:
-        template = {
-            (('A', 'X'), 0): combo[sorted_keys.index('alone_A')],
-            (('B', 'X'), 0): combo[sorted_keys.index('alone_B')],
-            (('A', 'X'), ('A', 'X')): combo[sorted_keys.index('same_A')],
-            (('B', 'X'), ('B', 'X')): combo[sorted_keys.index('same_B')],
-            (('A', 'X'), ('A', 'Y')): combo[sorted_keys.index('diff_A')],
-            (('B', 'X'), ('B', 'Y')): combo[sorted_keys.index('diff_B')],
-            (('A', 'X'), ('B', 'X')): combo[sorted_keys.index('cross_AXBX')],
-            (('B', 'X'), ('A', 'X')): combo[sorted_keys.index('cross_BXAX')],
-            (('A', 'X'), ('B', 'Y')): combo[sorted_keys.index('cross_AXBY')],
-            (('B', 'X'), ('A', 'Y')): combo[sorted_keys.index('cross_BXAY')]
-        }
-        template_matrices.append(template)
-
-    return template_matrices
-
-
-def test_single_parameter_set(agent_characteristics, utility_matrix, cond_distributions, solver="scipy"):
-    """Test single set of utility parameters using the specified solver."""
-    all_types = create_agent_types(agent_characteristics)
-    preference_classes = get_preference_classes(agent_characteristics)
-    valid_combinations = generate_valid_combinations(preference_classes)
-
-    with warnings.catch_warnings(record=True) as w:
-        warnings.filterwarnings('ignore')
-        # Pass the solver parameter here to solve_qp
-        _, result = solve_qp(
-            all_types,
-            utility_matrix,
-            valid_combinations,
-            preference_classes,
-            cond_distributions,
-            agent_characteristics,
-            tolerance=1e-6,
-            pack=solver
-        )
-    return result, w
-
-
-def process_template(args):
-    """
-    Worker function to process a single parameter template.
-
-    Args:
-        args: tuple containing (index, template, agent_characteristics, cond_distributions, tolerance, solver)
-
-    Returns:
-        A tuple: (index, template, result, combined_warnings, error_message)
-    """
-    index, template, agent_characteristics, cond_distributions, tolerance, solver = args
+def evaluate_solution(template, agent_characteristics, cond_distributions, solver="scipy"):
+    """Evaluate a solution using the existing QP solver."""
     try:
         utility_matrix = expand_utility_matrix(template)
-        output_capture = StringIO()
-        with redirect_stdout(output_capture), redirect_stderr(output_capture):
-            result, caught_warnings = test_single_parameter_set(agent_characteristics, utility_matrix,
-                                                                cond_distributions, solver)
-        captured_output = output_capture.getvalue()
+        all_types = create_agent_types(agent_characteristics)
+        preference_classes = get_preference_classes(agent_characteristics)
+        valid_combinations = generate_valid_combinations(preference_classes)
 
-        combined_warnings = []
-        if captured_output:
-            for line in captured_output.splitlines():
-                if "Optimization failed" in line:
-                    combined_warnings.append(line)
-        if caught_warnings:
-            for warn in caught_warnings:
-                combined_warnings.append(str(warn.message))
-        return (index, template, result, combined_warnings, None)
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore')
+            _, result = solve_qp(
+                all_types,
+                utility_matrix,
+                valid_combinations,
+                preference_classes,
+                cond_distributions,
+                agent_characteristics,
+                tolerance=1e-6,
+                pack=solver
+            )
+        return result if result is not None else float('inf')
     except Exception as e:
-        return (index, template, None, None, str(e))
-
-
-def estimate_runtime(n_combinations, sample_size=5, cond_distributions=None, max_workers=None, solver="scipy"):
-    """
-    Estimate total runtime based on sample runs, adjusted for parallel execution.
-    """
-    if cond_distributions is None:
-        raise ValueError("cond_distributions must be provided")
-
-    agent_characteristics = [('A', 1), ('A', 2), ('B', 1), ('B', 2)]
-    template = {
-        (('A', 'X'), 0): 0.1,
-        (('B', 'X'), 0): 0.1,
-        (('A', 'X'), ('A', 'X')): 0.8,
-        (('B', 'X'), ('B', 'X')): 0.9,
-        (('A', 'X'), ('A', 'Y')): 0.6,
-        (('B', 'X'), ('B', 'Y')): 0.5,
-        (('A', 'X'), ('B', 'X')): 0.4,
-        (('B', 'X'), ('A', 'X')): 0.4,
-        (('A', 'X'), ('B', 'Y')): 0.2,
-        (('B', 'X'), ('A', 'Y')): 0.2,
-    }
-    utility_matrix = expand_utility_matrix(template)
-
-    times = []
-    with warnings.catch_warnings():
-        warnings.filterwarnings('ignore')
-        for _ in range(sample_size):
-            start = time.time()
-            test_single_parameter_set(agent_characteristics, utility_matrix, cond_distributions, solver=solver)
-            times.append(time.time() - start)
-    avg_time = np.mean(times)
-    effective_workers = max_workers if max_workers is not None else os.cpu_count()
-    total_estimated = (avg_time * n_combinations) / effective_workers
-    return total_estimated
+        return float('inf')
 
 
 def format_time(seconds):
@@ -459,111 +183,6 @@ def format_time(seconds):
     minutes = int((seconds % 3600) // 60)
     seconds = int(seconds % 60)
     return f"{hours}h {minutes}m {seconds}s"
-
-
-def run_parameter_search(cond_distributions, n_points=3, tolerance=1e-2,
-                         max_workers=None, solver="scipy", major=""):
-    """Run parameter search in parallel and record results in a DataFrame."""
-    # Get the directory where the script is located
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-
-    output_dir = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Generalized_parameters"
-    #output_dir = config.GENERAL_PARAMETER_PATH
-    os.makedirs(output_dir, exist_ok=True)
-
-    # Define agent characteristics and generate parameter templates
-    agent_characteristics = config.agent_characteristics
-    templates = generate_parameter_grid(n_points)
-    total_count = len(templates)
-
-    with warnings.catch_warnings():
-        warnings.filterwarnings('ignore')
-        estimated_time = estimate_runtime(total_count, cond_distributions=cond_distributions, max_workers=max_workers)
-
-    effective_workers = max_workers if max_workers is not None else os.cpu_count()
-
-    print(f"\nEstimated total runtime: {format_time(estimated_time)}")
-    print(f"Testing {total_count} parameter combinations using {effective_workers} workers")
-    print("=" * 50)
-
-    # Create list to store results
-    results_data = []
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    warnings_path = os.path.join(output_dir, f"{timestamp}_warnings.log")
-
-    consistent_count = 0
-    task_args = [(i, template, agent_characteristics, cond_distributions, tolerance, solver)
-                 for i, template in enumerate(templates, 1)]
-
-    start_time = time.time()
-    completed_tasks = 0
-
-    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor, \
-            open(warnings_path, "w") as warn_f:
-
-        futures = {executor.submit(process_template, arg): arg[0] for arg in task_args}
-        for future in concurrent.futures.as_completed(futures):
-            completed_tasks += 1
-            index, template, result, combined_warnings, error_message = future.result()
-
-            if error_message is not None:
-                warn_f.write(f"Error processing combination {index}: {error_message}\n\n")
-            else:
-                if combined_warnings and len(combined_warnings) > 0:
-                    warn_f.write(f"\nWarnings for parameter set {index}:\n")
-                    for warning_msg in combined_warnings:
-                        warn_f.write(f"{warning_msg}\n")
-                if result is not None and result < tolerance:
-                    consistent_count += 1
-                    # Create a dictionary for this result
-                    result_dict = {
-                        'combination_id': index,
-                        'result': result,
-                        'major': major,
-                        'timestamp': timestamp
-                    }
-                    # Add all template parameters with cleaned up column names
-                    for k, v in template.items():
-                        # Extract components from the tuple key
-                        first_type, first_char = k[0]  # e.g., ('A', 'X')
-                        second_comp = k[1]  # either 0 or another tuple like ('B', 'X')
-
-                        if second_comp == 0:
-                            # Handle alone case
-                            param_name = f"utility_{first_type}_alone"
-                        else:
-                            # Handle interaction case
-                            second_type, second_char = second_comp
-                            param_name = f"utility_{first_type}_{second_type}_interaction"
-
-                        result_dict[param_name] = v
-                    results_data.append(result_dict)
-
-            if completed_tasks % max(1, total_count // 100000) == 0 or completed_tasks == total_count:
-                elapsed_time = time.time() - start_time
-                progress = completed_tasks / total_count
-                estimated_remaining = (elapsed_time / progress) - elapsed_time
-                print(
-                    f"Progress: Tested {completed_tasks} out of {total_count} parameter combinations ({progress:.6%})")
-                print(f"Using {effective_workers} workers")
-                print(f"Time elapsed: {format_time(elapsed_time)}")
-                print(f"Estimated remaining: {format_time(estimated_remaining)}")
-                print(f"Consistent parameters found so far: {consistent_count}")
-                print("-" * 50)
-
-    # Create DataFrame from results
-    results_df = pd.DataFrame(results_data)
-
-    # Save DataFrame to CSV
-    output_path = os.path.join(output_dir, f"{timestamp}_parameter_search_results_{major}.csv")
-    results_df.to_csv(output_path, index=False)
-
-    print("\nParameter search completed.")
-    print(f"Total consistent parameter sets found: {consistent_count}")
-    print(f"Results saved to: {output_path}")
-    print(f"Warnings saved to: {warnings_path}")
-
-    return results_df
 
 
 def generate_initial_solution():
@@ -584,65 +203,154 @@ def generate_initial_solution():
 
 def generate_neighbor(current_solution, temperature):
     """
-    Generate a neighboring solution by perturbing the current solution.
-    The size of perturbation depends on temperature.
+    Generate a neighboring solution using adaptive exploration strategies based on temperature.
+
+    Args:
+        current_solution: Current solution dictionary
+        temperature: Current temperature (0-1 range)
+
+    Returns:
+        Dictionary containing the new neighboring solution
     """
+    # Define exploration strategies and their temperature-dependent probabilities
+    if temperature > 0.7:
+        # High temperature: prioritize exploration
+        mode_probs = [0.2, 0.3, 0.3, 0.2]  # [small, large, targeted, reset]
+    elif temperature > 0.4:
+        # Medium temperature: mix of exploration and exploitation
+        mode_probs = [0.4, 0.3, 0.2, 0.1]
+    elif temperature > 0.1:
+        # Lower temperature: more refinement
+        mode_probs = [0.6, 0.2, 0.1, 0.1]
+    else:
+        # Very low temperature: mostly refinement
+        mode_probs = [0.8, 0.1, 0.1, 0.0]
+
+    exploration_mode = np.random.choice(
+        ["small_perturbation", "large_perturbation", "targeted_jump", "complete_reset"],
+        p=mode_probs
+    )
+
+    # Make a copy of the current solution
     neighbor = current_solution.copy()
-    keys = list(current_solution.keys())
 
-    # Select random number of parameters to perturb (more when hot, fewer when cold)
-    num_params = max(1, int(len(current_solution) * temperature))
-    indices_to_perturb = np.random.choice(len(keys), num_params, replace=False)
+    # Group parameters by type for targeted perturbations
+    alone_params = [k for k in neighbor.keys() if k[1] == 0]
+    same_type_params = [k for k in neighbor.keys() if isinstance(k[1], tuple) and k[0][0] == k[1][0]]
+    cross_type_params = [k for k in neighbor.keys() if isinstance(k[1], tuple) and k[0][0] != k[1][0]]
 
-    for idx in indices_to_perturb:
-        param = keys[idx]
-        current_value = neighbor[param]
-        # Perturbation size based on temperature
-        perturbation = np.random.normal(0, temperature * 0.3)
+    # Apply the selected exploration strategy
+    if exploration_mode == "small_perturbation":
+        # Small changes to many parameters
+        perturbation_scale = 0.1 * temperature
 
-        # Apply perturbation with bounds
-        if param[1] == 0:  # Alone case
-            new_value = np.clip(current_value + perturbation, 0, 0.3)
-        elif param[0] == param[1]:  # Same type interaction
-            new_value = np.clip(current_value + perturbation, 0.5, 1.0)
-        else:  # Different type interaction
-            new_value = np.clip(current_value + perturbation, 0.1, 0.8)
+        # Perturb a subset of parameters with small changes
+        for param in neighbor.keys():
+            if np.random.random() < 0.7:  # 70% chance to perturb each parameter
+                perturbation = np.random.normal(0, perturbation_scale)
 
-        neighbor[param] = new_value
+                if param in alone_params:
+                    neighbor[param] = np.clip(neighbor[param] + perturbation, 0.01, 0.3)
+                elif param in same_type_params:
+                    neighbor[param] = np.clip(neighbor[param] + perturbation, 0.5, 1.0)
+                else:  # cross_type_params
+                    neighbor[param] = np.clip(neighbor[param] + perturbation, 0.1, 0.7)
+
+    elif exploration_mode == "large_perturbation":
+        # Larger changes to fewer parameters
+        perturbation_scale = 0.3
+
+        # Select a random subset of parameters to perturb (30%)
+        all_params = list(neighbor.keys())
+        num_to_perturb = max(1, int(len(all_params) * 0.3))
+        # Use Python's random module instead of NumPy for selecting tuple keys
+        import random
+        params_to_perturb = random.sample(all_params, num_to_perturb)
+
+        for param in params_to_perturb:
+            # Apply larger perturbations
+            perturbation = np.random.normal(0, perturbation_scale)
+
+            if param in alone_params:
+                neighbor[param] = np.clip(neighbor[param] + perturbation, 0.01, 0.3)
+            elif param in same_type_params:
+                neighbor[param] = np.clip(neighbor[param] + perturbation, 0.5, 1.0)
+            else:  # cross_type_params
+                neighbor[param] = np.clip(neighbor[param] + perturbation, 0.1, 0.7)
+
+    elif exploration_mode == "targeted_jump":
+        # Target a specific group of parameters
+        target_group = np.random.choice(["alone", "same_type", "cross_type"])
+
+        if target_group == "alone":
+            # Significant changes to alone utilities
+            for param in alone_params:
+                # Either make it very small or relatively large
+                if np.random.random() < 0.5:
+                    neighbor[param] = np.random.uniform(0.01, 0.1)
+                else:
+                    neighbor[param] = np.random.uniform(0.1, 0.3)
+
+        elif target_group == "same_type":
+            # Target same-type interactions
+            for param in same_type_params:
+                # Either make it smaller or larger
+                if np.random.random() < 0.3:
+                    neighbor[param] = np.random.uniform(0.5, 0.7)
+                else:
+                    neighbor[param] = np.random.uniform(0.7, 1.0)
+
+        elif target_group == "cross_type":
+            # Target cross-group interactions
+            for param in cross_type_params:
+                # Randomize completely within bounds
+                neighbor[param] = np.random.uniform(0.1, 0.7)
+
+    elif exploration_mode == "complete_reset":
+        # Generate a completely new solution
+        # But possibly preserve some aspects of the current solution
+
+        # Create a fresh solution
+        new_solution = generate_initial_solution()
+
+        # With 30% probability, keep some of the original solution's characteristics
+        if np.random.random() < 0.3:
+            # Choose a category to preserve
+            preserve_category = np.random.choice(["alone", "same_type", "cross_type"])
+
+            if preserve_category == "alone":
+                for param in alone_params:
+                    new_solution[param] = neighbor[param]
+            elif preserve_category == "same_type":
+                for param in same_type_params:
+                    new_solution[param] = neighbor[param]
+            elif preserve_category == "cross_type":
+                for param in cross_type_params:
+                    new_solution[param] = neighbor[param]
+
+        return new_solution
 
     return neighbor
 
 
-def evaluate_solution(template, agent_characteristics, cond_distributions, solver="scipy"):
-    """Evaluate a solution using the existing QP solver."""
-    try:
-        utility_matrix = expand_utility_matrix(template)
-        all_types = create_agent_types(agent_characteristics)
-        preference_classes = get_preference_classes(agent_characteristics)
-        valid_combinations = generate_valid_combinations(preference_classes)
-
-        with warnings.catch_warnings():
-            warnings.filterwarnings('ignore')
-            _, result = solve_qp(
-                all_types,
-                utility_matrix,
-                valid_combinations,
-                preference_classes,
-                cond_distributions,
-                agent_characteristics,
-                tolerance=1,
-                pack=solver
-            )
-        return result if result is not None else float('inf')
-    except Exception as e:
-        return float('inf')
-
-
 def run_simulated_annealing(cond_distributions, agent_characteristics,
-                          initial_temp=1.0, final_temp=0.01, cooling_rate=0.95,
-                          iterations_per_temp=10, solver="scipy", major=""):
+                            initial_temp=1.0, final_temp=0.01, cooling_rate=0.97,
+                            iterations_per_temp=50, solver="scipy", major=""):
     """
-    Run simulated annealing to find optimal parameters.
+    Run enhanced simulated annealing to find optimal parameters.
+
+    Args:
+        cond_distributions: Dictionary of conditional distributions
+        agent_characteristics: List of agent characteristics
+        initial_temp: Initial temperature (default: 1.0)
+        final_temp: Final temperature (default: 0.01)
+        cooling_rate: Cooling rate (default: 0.97)
+        iterations_per_temp: Iterations per temperature (default: 50)
+        solver: QP solver to use (default: "scipy")
+        major: Major identifier for output filename
+
+    Returns:
+        DataFrame with results
     """
     # Setup output directory and logging
     output_dir = config.GENERAL_PARAMETER_PATH
@@ -652,20 +360,30 @@ def run_simulated_annealing(cond_distributions, agent_characteristics,
     # Initialize
     current_solution = generate_initial_solution()
     current_energy = evaluate_solution(current_solution, agent_characteristics,
-                                    cond_distributions, solver)
+                                       cond_distributions, solver)
     best_solution = current_solution.copy()
     best_energy = current_energy
 
     # Store all accepted solutions
     solutions_data = []
 
+    # Setup for restart mechanism
+    iterations_since_improvement = 0
+    restart_threshold = 200  # Restart after 200 iterations without improvement
+
+    # Setup for early stopping detection
+    energy_history = []
+    plateau_window = 50  # Window size for plateau detection
+    plateau_threshold = 1e-6  # Threshold for std dev to detect plateau
+
     temperature = initial_temp
     iteration = 0
     start_time = time.time()
 
-    print(f"\nStarting Simulated Annealing search:")
+    print(f"\nStarting Enhanced Simulated Annealing search:")
     print(f"Initial temperature: {initial_temp}")
     print(f"Cooling rate: {cooling_rate}")
+    print(f"Iterations per temperature: {iterations_per_temp}")
     print("=" * 50)
 
     while temperature > final_temp:
@@ -675,7 +393,7 @@ def run_simulated_annealing(cond_distributions, agent_characteristics,
             # Generate and evaluate neighbor
             neighbor = generate_neighbor(current_solution, temperature)
             neighbor_energy = evaluate_solution(neighbor, agent_characteristics,
-                                             cond_distributions, solver)
+                                                cond_distributions, solver)
 
             # Decide whether to accept neighbor
             delta_e = neighbor_energy - current_energy
@@ -714,15 +432,52 @@ def run_simulated_annealing(cond_distributions, agent_characteristics,
                 if current_energy < best_energy:
                     best_energy = current_energy
                     best_solution = current_solution.copy()
+                    iterations_since_improvement = 0
+                else:
+                    iterations_since_improvement += 1
+
+            else:
+                # Even if we don't accept the solution, increment iterations since improvement
+                iterations_since_improvement += 1
+
+            # Track energy history for plateau detection
+            energy_history.append(current_energy)
+            if len(energy_history) > plateau_window:
+                energy_history.pop(0)  # Keep only the most recent values
+
+            # Check for restart conditions
+
+            # 1. Too many iterations without improvement
+            if iterations_since_improvement > restart_threshold:
+                print(f"Restarting after {iterations_since_improvement} iterations without improvement")
+                # Restart from best solution with some perturbation
+                current_solution = generate_neighbor(best_solution, 0.5)  # Medium perturbation
+                current_energy = evaluate_solution(current_solution, agent_characteristics,
+                                                   cond_distributions, solver)
+                iterations_since_improvement = 0
+                energy_history = []  # Reset energy history
+
+            # 2. Detected plateau (energy not changing significantly)
+            elif len(energy_history) == plateau_window:
+                energy_std = np.std(energy_history)
+                if energy_std < plateau_threshold:
+                    print(f"Detected plateau at iteration {iteration}, performing restart")
+                    # Generate completely new solution
+                    current_solution = generate_initial_solution()
+                    current_energy = evaluate_solution(current_solution, agent_characteristics,
+                                                       cond_distributions, solver)
+                    iterations_since_improvement = 0
+                    energy_history = []  # Reset energy history
 
             # Progress reporting
-            if iteration % 50 == 0:
+            if iteration % 50 == 0 or iteration % iterations_per_temp == 0:
                 elapsed_time = time.time() - start_time
                 print(f"Iteration: {iteration}")
                 print(f"Temperature: {temperature:.6f}")
                 print(f"Current Energy: {current_energy:.6f}")
                 print(f"Best Energy: {best_energy:.6f}")
-                print(f"Time elapsed: {elapsed_time:.2f}s")
+                print(f"Time elapsed: {format_time(elapsed_time)}")
+                print(f"Iterations since improvement: {iterations_since_improvement}")
                 print("-" * 50)
 
         # Cool down
@@ -735,7 +490,7 @@ def run_simulated_annealing(cond_distributions, agent_characteristics,
     output_path = os.path.join(output_dir, f"{timestamp}_sa_results_{major}.csv")
     results_df.to_csv(output_path, index=False)
 
-    print("\nSimulated Annealing completed.")
+    print("\nEnhanced Simulated Annealing completed.")
     print(f"Total iterations: {iteration}")
     print(f"Best energy found: {best_energy:.6f}")
     print(f"Results saved to: {output_path}")
@@ -743,50 +498,50 @@ def run_simulated_annealing(cond_distributions, agent_characteristics,
     return results_df
 
 
-
 if __name__ == "__main__":
     # WHEN RUNNING FROM A VM
-    #csv_path = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Type_shares/Observed_type_shares_non_zeros_generalized.csv"
+    # csv_path = "/home/santiagoneirahernandez/preferences_networks/data/Datasets/Type_shares/Observed_type_shares_non_zeros_generalized.csv"
     csv_path = os.path.join(config.TYPE_SHARES_FOLDER_PATH_GEN,
                             "Observed_type_shares_non_zeros_generalized.csv")
     df = pd.read_csv(csv_path)
-    #print(df.head(2))
-    df=df[df['major']=="Medicina"]
-    #print(df.head(2))
-    df=df[df['term']==201610]
-    #print(df)
-    #print(type(df.iloc[0,0]))
+    # print(df.head(2))
+    df = df[df['major'] == "Economía"]
+    # print(df.head(2))
+    df = df[df['term'] == 201610]
+    # print(df)
+    # print(type(df.iloc[0,0]))
     cond_distributions = {
-        (('A', 1), 0): df.iloc[0,0],
-        (('A', 1), ('A', 1)): df.iloc[0,1],
-        (('A', 1), ('A', 2)): df.iloc[0,2],
-        (('A', 1), ('B', 1)): df.iloc[0,3],
-        (('A', 1), ('B', 2)): df.iloc[0,4],
-        (('A', 2), 0): df.iloc[0,5],
-        (('A', 2), ('A', 1)): df.iloc[0,6],
-        (('A', 2), ('A', 2)): df.iloc[0,7],
-        (('A', 2), ('B', 1)): df.iloc[0,8],
-        (('A', 2), ('B', 2)): df.iloc[0,9],
-        (('B', 1), 0): df.iloc[0,10],
-        (('B', 1), ('A', 1)): df.iloc[0,11],
-        (('B', 1), ('A', 2)): df.iloc[0,12],
-        (('B', 1), ('B', 1)): df.iloc[0,13],
-        (('B', 1), ('B', 2)): df.iloc[0,14],
-        (('B', 2), 0): df.iloc[0,15],
-        (('B', 2), ('A', 1)): df.iloc[0,16],
-        (('B', 2), ('A', 2)): df.iloc[0,17],
-        (('B', 2), ('B', 1)): df.iloc[0,18],
-        (('B',2), ('B', 2)): df.iloc[0,19],
+        (('A', 1), 0): df.iloc[0, 0],
+        (('A', 1), ('A', 1)): df.iloc[0, 1],
+        (('A', 1), ('A', 2)): df.iloc[0, 2],
+        (('A', 1), ('B', 1)): df.iloc[0, 3],
+        (('A', 1), ('B', 2)): df.iloc[0, 4],
+        (('A', 2), 0): df.iloc[0, 5],
+        (('A', 2), ('A', 1)): df.iloc[0, 6],
+        (('A', 2), ('A', 2)): df.iloc[0, 7],
+        (('A', 2), ('B', 1)): df.iloc[0, 8],
+        (('A', 2), ('B', 2)): df.iloc[0, 9],
+        (('B', 1), 0): df.iloc[0, 10],
+        (('B', 1), ('A', 1)): df.iloc[0, 11],
+        (('B', 1), ('A', 2)): df.iloc[0, 12],
+        (('B', 1), ('B', 1)): df.iloc[0, 13],
+        (('B', 1), ('B', 2)): df.iloc[0, 14],
+        (('B', 2), 0): df.iloc[0, 15],
+        (('B', 2), ('A', 1)): df.iloc[0, 16],
+        (('B', 2), ('A', 2)): df.iloc[0, 17],
+        (('B', 2), ('B', 1)): df.iloc[0, 18],
+        (('B', 2), ('B', 2)): df.iloc[0, 19],
     }
-
 
     results_df = run_simulated_annealing(
         cond_distributions=cond_distributions,
         agent_characteristics=config.agent_characteristics,
         initial_temp=1.0,
-        final_temp=0.01,
-        cooling_rate=0.95,
-        iterations_per_temp=25,
+        final_temp=0.001,
+        cooling_rate=0.97,
+        iterations_per_temp=50,
         solver="scipy",
-        major="Medicine_201610"
+        major="Economics_201610"
     )
+
+

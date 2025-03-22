@@ -194,22 +194,22 @@ def analyze_results(directory_path, result_threshold=1e-3, output_file=None,coun
 
 if __name__ == "__main__":
 
-    economics_path = config.GENERAL_COUNTERFACTUAL_PATH
-    medicine_path = config.MEDICINE_COUNTERFACTUAL_PATH
+    economics_path = config.GENERAL_COUNTERFACTUAL_PATH_2
+    medicine_path = config.MEDICINE_COUNTERFACTUAL_PATH_2
 
     results_path= config.RESULTS_DIR_GEN
     os.makedirs(results_path, exist_ok=True)
 
     # Set output file path
-    output_file = os.path.join(results_path, "cross_linkedness_analysis_medicine_counter_equaldist.csv")
+    output_file = os.path.join(results_path, "cross_linkedness_analysis_medicine_counter_factual_2.csv")
 
     # Run the analysis
     results = analyze_results(
         directory_path=medicine_path,
         result_threshold=1e-3,
         output_file=output_file,
-        counter_word="*_equaldist.csv",
-        counter_tag="Balancing of classrooms"
+        counter_word="*_factual.csv",
+        counter_tag="Factual"
     )
 
     # Print overall statistics

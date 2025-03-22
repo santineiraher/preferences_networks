@@ -51,7 +51,7 @@ def load_utility_templates(result_file_path, tolerance=1e-2, max_per_temp=5):
 
     for temp, group in grouped_by_temp:
         # Sort by result (lower is better) and take only the first row
-        best_sample = group.sort_values('result').head(1)
+        best_sample = group.sort_values('result').head(max_per_temp)
         balanced_samples.append(best_sample)
 
     # Combine all selected samples
@@ -545,7 +545,7 @@ def run_counterfactual_analysis(utility_template, iteration_id, metaparams,
         DataFrame with results
     """
     # Setup output directory and logging
-    output_dir = config.MEDICINE_COUNTERFACTUAL_PATH
+    output_dir = config.MEDICINE_COUNTERFACTUAL_PATH_3
     os.makedirs(output_dir, exist_ok=True)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -650,7 +650,7 @@ def run_counterfactual_analysis(utility_template, iteration_id, metaparams,
         results_df = pd.DataFrame(solutions_data)
 
         # Save results
-        output_path = os.path.join(output_dir, f"{timestamp}_counterfactual_results_{major}_counterfactual_equaldistz.csv")
+        output_path = os.path.join(output_dir, f"{timestamp}_counterfactual_results_{major}_factual.csv")
         results_df.to_csv(output_path, index=False)
 
         print("\nCounterfactual Analysis completed.")
@@ -760,14 +760,14 @@ def run_batch_counterfactual_analysis(result_file_path, metaparams,
 
 if __name__ == "__main__":
     # Example usage
-    result_file_path = os.path.join(config.GENERAL_PARAMETER_PATH, "20250225_120801_sa_results_Medicine_201610.csv")
+    result_file_path = os.path.join(config.GENERAL_PARAMETER_PATH, "20250312_225502_sa_results_Medicine_201610.csv")
 
     # Set metaparameters based on the population
     metaparams = {
-        'N_A_1': 18 ,  # Number of type A1 agents
-        'N_A_2': 18,  # Number of type A2 agents
-        'N_B_1': 11,  # Number of type B1 agents
-        'N_B_2': 12,  # Number of type B2 agents
+        'N_A_1': 9,  # Number of type A1 agents
+        'N_A_2': 27,  # Number of type A2 agents
+        'N_B_1': 3,  # Number of type B1 agents
+        'N_B_2': 20,  # Number of type B2 agents
         'N': 59  # Total population
     }
 
@@ -776,7 +776,7 @@ if __name__ == "__main__":
         result_file_path=result_file_path,
         metaparams=metaparams,
         tolerance=1e-3,
-        max_per_temp=1,  # Take up to 3 solutions per temperature value
+        max_per_temp=3,  # Take up to 3 solutions per temperature value
         iterations_per_temp=6,
         max_workers=None  # Use all available cores
     )
