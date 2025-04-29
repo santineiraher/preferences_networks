@@ -254,7 +254,7 @@ if __name__ == "__main__":
         results_path = config.RESULTS_DIR_GEN
 
         csv_path = os.path.join(type_shares, "Observed_type_shares_non_zeros_generalized.csv")
-        file_pattern = os.path.join(results_path, "*medicine*_2.csv")
+        file_pattern = os.path.join(results_path, "*economics*_3.csv")
         files = glob.glob(file_pattern)
         # Process each file
         filtered_dfs = []
@@ -272,6 +272,6 @@ if __name__ == "__main__":
         combined_df = pd.concat(filtered_dfs, ignore_index=True)
         economics_cs = 0.21818181818181812
         medicine_cs = 0.32627765064836
-        output_file = os.path.join(results_path, "kdensity_medicine_2.png")
+        output_file = os.path.join(results_path, "kdensity_economics_3.png")
 
-        plot_cross_linkedness_kde(combined_df, output_file=output_file, benchmark_value=medicine_cs)
+        plot_cross_linkedness_kde(combined_df, output_file=output_file, benchmark_value=economics_cs)

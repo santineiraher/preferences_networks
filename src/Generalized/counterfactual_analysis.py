@@ -650,7 +650,7 @@ def run_counterfactual_analysis(utility_template, iteration_id, metaparams,
         results_df = pd.DataFrame(solutions_data)
 
         # Save results
-        output_path = os.path.join(output_dir, f"{timestamp}_counterfactual_results_{major}_factual.csv")
+        output_path = os.path.join(output_dir, f"{timestamp}_counterfactual_results_{major}_counterfactual_equaldist.csv")
         results_df.to_csv(output_path, index=False)
 
         print("\nCounterfactual Analysis completed.")
@@ -764,10 +764,10 @@ if __name__ == "__main__":
 
     # Set metaparameters based on the population
     metaparams = {
-        'N_A_1': 9,  # Number of type A1 agents
-        'N_A_2': 27,  # Number of type A2 agents
-        'N_B_1': 3,  # Number of type B1 agents
-        'N_B_2': 20,  # Number of type B2 agents
+        'N_A_1': 18,  # Number of type A1 agents
+        'N_A_2': 18,  # Number of type A2 agents
+        'N_B_1': 11,  # Number of type B1 agents
+        'N_B_2': 12,  # Number of type B2 agents
         'N': 59  # Total population
     }
 

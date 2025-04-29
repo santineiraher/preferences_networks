@@ -194,22 +194,22 @@ def analyze_results(directory_path, result_threshold=1e-3, output_file=None,coun
 
 if __name__ == "__main__":
 
-    economics_path = config.GENERAL_COUNTERFACTUAL_PATH_2
-    medicine_path = config.MEDICINE_COUNTERFACTUAL_PATH_2
+    economics_path = config.GENERAL_COUNTERFACTUAL_PATH_3
+    medicine_path = config.MEDICINE_COUNTERFACTUAL_PATH_3
 
     results_path= config.RESULTS_DIR_GEN
     os.makedirs(results_path, exist_ok=True)
 
     # Set output file path
-    output_file = os.path.join(results_path, "cross_linkedness_analysis_medicine_counter_factual_2.csv")
+    output_file = os.path.join(results_path, "cross_linkedness_analysis_economics_counter_equit_3.csv")
 
     # Run the analysis
     results = analyze_results(
-        directory_path=medicine_path,
+        directory_path=economics_path,
         result_threshold=1e-3,
         output_file=output_file,
-        counter_word="*_factual.csv",
-        counter_tag="Factual"
+        counter_word="*_equit.csv",
+        counter_tag="Incremented proportion of Low - Income"
     )
 
     # Print overall statistics

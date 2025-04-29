@@ -5,9 +5,10 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
-from utils.helper_functions_simple import calculate_fractions, calculate_links,calculate_links_dataframe
+from utils.helper_functions_simple import calculate_fractions, calculate_links, calculate_links_dataframe
 import config
 from matplotlib.patches import Patch
+
 
 def extract_term_major(filename):
     term_match = re.search(r'counter_(\d{6})_', filename)
@@ -17,6 +18,7 @@ def extract_term_major(filename):
     major = major_match.group(1) if major_match else None
 
     return term, major
+
 
 class FactualAnalysis:
     def __init__(self, folder_path=config.COUNTERFACTUALS_FOLDER_PATH, output_dir=config.FACTUAL_ANALYSIS_DIR):
@@ -28,13 +30,13 @@ class FactualAnalysis:
         # Store results for CSV and Excel
         self.results = pd.DataFrame(columns=[
             "Major", "semester", "mean_no counterfactual", "mean_50%", "mean_100%", "mean_150%",
-            "diff_50%", "pval_50%", "tag_50%", "diff_100%", "pval_100%", "tag_100%", "diff_150%", "pval_150%", "tag_150%"
+            "diff_50%", "pval_50%", "tag_50%", "stderr_diff_50%",
+            "diff_100%", "pval_100%", "tag_100%", "stderr_diff_100%",
+            "diff_150%", "pval_150%", "tag_150%", "stderr_diff_150%"
         ])
 
     def run_analysis(self):
         files = [os.path.join(self.folder_path, f) for f in os.listdir(self.folder_path) if f.endswith('.csv')]
-
-
 
         color_palette = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3"]
         N_B_list = ["No counterfactual", "+50%", "+100%", "+150%"]
@@ -47,7 +49,6 @@ class FactualAnalysis:
             print(f"Processing term {term} and major {major}")
 
             zeroes = self.non_zeros[(self.non_zeros['term'] == term) & (self.non_zeros['major'] == major)]
-
 
             if zeroes.empty:
                 print(f"No matching rows for term {term} and major {major}")
@@ -100,7 +101,7 @@ class FactualAnalysis:
 
                 # Plot the kdeplot only if valid data exists
                 sns.kdeplot(data=initial_clean, x='cross', hue='counterfactual', fill=True, common_norm=False,
-                            palette=color_palette, alpha=0.5,bw_adjust=3)
+                            palette=color_palette, alpha=0.5, bw_adjust=3)
 
                 # Add a vertical line for the observed cross value
                 plt.axvline(x=cross_real, color='red', linestyle='--')
@@ -132,18 +133,34 @@ class FactualAnalysis:
             ttest_results = {}
             for counter in N_B_list[1:]:
                 if not pd.isna(means[counter]) and not pd.isna(means["No counterfactual"]):
-                    t_stat, p_val = stats.ttest_ind(
-                        initial_clean[initial_clean['counterfactual'] == counter]['cross'],
-                        initial_clean[initial_clean['counterfactual'] == "No counterfactual"]['cross'],
-                        nan_policy='omit'
-                    )
+                    group1 = initial_clean[initial_clean['counterfactual'] == counter]['cross']
+                    group2 = initial_clean[initial_clean['counterfactual'] == "No counterfactual"]['cross']
+
+                    # Calculate t-statistic and p-value
+                    t_stat, p_val = stats.ttest_ind(group1, group2, nan_policy='omit', equal_var=False)
+
+                    # Calculate standard error of difference
+                    # Formula: sqrt(s₁²/n₁ + s₂²/n₂) where s is std dev and n is sample size
+                    var1 = group1.var(ddof=1)  # Sample variance for group 1
+                    var2 = group2.var(ddof=1)  # Sample variance for group 2
+                    n1 = len(group1)
+                    n2 = len(group2)
+
+                    stderr_diff = np.sqrt((var1 / n1) + (var2 / n2)) if n1 > 0 and n2 > 0 else np.nan
+
                     ttest_results[counter] = {
                         "diff": means[counter] - means["No counterfactual"],
                         "pval": p_val,
-                        "tag": "Significant" if p_val < 0.05 else "Not significant"
+                        "tag": "Significant" if p_val < 0.05 else "Not significant",
+                        "stderr_diff": stderr_diff
                     }
                 else:
-                    ttest_results[counter] = {"diff": np.nan, "pval": np.nan, "tag": "NA"}
+                    ttest_results[counter] = {
+                        "diff": np.nan,
+                        "pval": np.nan,
+                        "tag": "NA",
+                        "stderr_diff": np.nan
+                    }
 
             # Append the results to the DataFrame
             self.results = pd.concat([self.results, pd.DataFrame({
@@ -156,12 +173,15 @@ class FactualAnalysis:
                 "diff_50%": [ttest_results["+50%"]["diff"]],
                 "pval_50%": [ttest_results["+50%"]["pval"]],
                 "tag_50%": [ttest_results["+50%"]["tag"]],
+                "stderr_diff_50%": [ttest_results["+50%"]["stderr_diff"]],
                 "diff_100%": [ttest_results["+100%"]["diff"]],
                 "pval_100%": [ttest_results["+100%"]["pval"]],
                 "tag_100%": [ttest_results["+100%"]["tag"]],
+                "stderr_diff_100%": [ttest_results["+100%"]["stderr_diff"]],
                 "diff_150%": [ttest_results["+150%"]["diff"]],
                 "pval_150%": [ttest_results["+150%"]["pval"]],
-                "tag_150%": [ttest_results["+150%"]["tag"]]
+                "tag_150%": [ttest_results["+150%"]["tag"]],
+                "stderr_diff_150%": [ttest_results["+150%"]["stderr_diff"]]
             })], ignore_index=True)
 
         # Save results to CSV and Excel files
@@ -170,6 +190,7 @@ class FactualAnalysis:
         self.results.to_csv(csv_filename, index=False)
         self.results.to_excel(excel_filename, index=False)
         print(f"Results saved to {csv_filename} and {excel_filename}")
+
 
 if __name__ == "__main__":
     factual_analysis = FactualAnalysis()
