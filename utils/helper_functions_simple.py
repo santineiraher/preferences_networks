@@ -331,3 +331,6 @@ def calculate_links(data, N_B, N_W):
 
     else:
         raise ValueError("Input data must be a DataFrame, Series, or dictionary.")
+
+
+

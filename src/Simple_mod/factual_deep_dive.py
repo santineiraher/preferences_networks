@@ -52,9 +52,9 @@ class FactualAnalysis:
                 continue
 
             cross_actual = calculate_links_dataframe(zeroes, zeroes['N_B'].iloc[0], zeroes['N_W'].iloc[0])
-
-            if not cross_actual.empty and 'NBB' in cross_actual.columns and 'total' in cross_actual.columns:
-                cross_real = cross_actual['NBB'].iloc[0]
+            print(cross_actual.columns)
+            if not cross_actual.empty and 'NBW' in cross_actual.columns and 'total' in cross_actual.columns:
+                cross_real = cross_actual['NBW'].iloc[0]
                 total_real = cross_actual['total'].iloc[0]
             else:
                 print(f"Error: Required columns are missing or cross_actual is empty for term {term} and major {major}")
@@ -64,7 +64,7 @@ class FactualAnalysis:
             print(f"Cross-real: {cross_real}, Total-real: {total_real}")
 
             # Process each counterfactual
-            initial = pd.DataFrame(columns=['counterfactual', 'NBB', 'total'])
+            initial = pd.DataFrame(columns=['counterfactual', 'NBW', 'total'])
 
             for counter in N_B_list:
                 if counter not in params['counterfactual'].values:
@@ -77,7 +77,7 @@ class FactualAnalysis:
                 sub_param = calculate_links(sub_param, N_B, N_A)
 
                 if 'NBB' in sub_param.columns and 'total' in sub_param.columns:
-                    to_append = sub_param[['counterfactual', 'NBB', 'total']]
+                    to_append = sub_param[['counterfactual', 'NBW', 'total']]
                     initial = pd.concat([initial, to_append], ignore_index=True)
                 else:
                     print(f"Warning: Required columns are missing for {counter} in term {term}, major {major}")
@@ -86,7 +86,7 @@ class FactualAnalysis:
             for counter in N_B_list:
                 if counter not in initial['counterfactual'].values:
                     initial = pd.concat(
-                        [initial, pd.DataFrame({'counterfactual': [counter], 'NBB': [np.nan], 'total': [np.nan]})],
+                        [initial, pd.DataFrame({'counterfactual': [counter], 'NBW': [np.nan], 'total': [np.nan]})],
                         ignore_index=True)
 
             # Create two subplots in one figure
@@ -96,7 +96,7 @@ class FactualAnalysis:
         """Creates two KDE plots in a single figure - one for NBB and one for total."""
 
         # Filter out NaN values from the DataFrame before plotting
-        data_clean_nbb = data.dropna(subset=['NBB'])
+        data_clean_nbb = data.dropna(subset=['NBW'])
         data_clean_total = data.dropna(subset=['total'])
 
         if data_clean_nbb.empty and data_clean_total.empty:
@@ -107,22 +107,22 @@ class FactualAnalysis:
 
         # Plot 1: NBB (cross-links)
         if not data_clean_nbb.empty:
-            sns.kdeplot(data=data_clean_nbb, x='NBB', hue='counterfactual', fill=True,
+            sns.kdeplot(data=data_clean_nbb, x='NBW', hue='counterfactual', fill=True,
                         common_norm=False, palette=color_palette, alpha=0.5,
                         bw_adjust=3, ax=ax1)
 
             # Add vertical line for observed value
             if not np.isnan(cross_real):
                 ax1.axvline(x=cross_real, color='red', linestyle='--')
-                ax1.annotate('Observed Number of cross-links',
+                ax1.annotate('Número de enlaces heterofílicos observado',
                              xy=(cross_real, 0),
                              xytext=(cross_real + 0.5, ax1.get_ylim()[1] * 0.7),
                              color='red')
 
             ax1.set_xlim(left=0)  # Ensure x-axis starts from 0
-            ax1.set_title(f"Observed Number of cross-links\n{major} in semester {term}")
-            ax1.set_xlabel('NBB (cross-links)')
-            ax1.set_ylabel('Density')
+            ax1.set_title(f"Número de enlaces cruzados observados para \n{major} en el semestre {term}")
+            ax1.set_xlabel('# enlaces cruzados (heterofílicos)')
+            ax1.set_ylabel('Densidad')
 
         # Plot 2: Total links
         if not data_clean_total.empty:
@@ -133,15 +133,15 @@ class FactualAnalysis:
             # Add vertical line for observed value
             if not np.isnan(total_real):
                 ax2.axvline(x=total_real, color='red', linestyle='--')
-                ax2.annotate('Observed Number of total links',
+                ax2.annotate('Número total de links observado',
                              xy=(total_real, 0),
                              xytext=(total_real + 0.5, ax2.get_ylim()[1] * 0.7),
                              color='red')
 
             ax2.set_xlim(left=0)  # Ensure x-axis starts from 0
-            ax2.set_title(f"Observed Number of total links\n{major} in semester {term}")
-            ax2.set_xlabel('Total links')
-            ax2.set_ylabel('Density')
+            ax2.set_title(f"Número total de enlaces observados para \n{major} en el semestre {term}")
+            ax2.set_xlabel('Total de enlaces')
+            ax2.set_ylabel('Densidad')
 
         # Fix legend issues if needed
         for ax in [ax1, ax2]:
@@ -151,7 +151,7 @@ class FactualAnalysis:
                 for i, label in enumerate(N_B_list):
                     ax.plot([], [], color=color_palette[i], label=label)
 
-            ax.legend(loc='upper right', title='Counterfactual Values')
+            ax.legend(loc='upper right', title='Contrafactual')
 
         plt.tight_layout()
         plot_filename = f"{self.output_dir}/double_plot_{term}_{major}.png"
