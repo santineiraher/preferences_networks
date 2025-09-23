@@ -167,7 +167,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📚 Citations
 
-If you use this framework in your research, please cite:
+If you plan on using the results from this analysis, please refer to as:
 ```bibtex
 @mastersthesis{preferences_networks,
   author = {Santiago Neira},
